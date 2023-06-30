@@ -1,4 +1,4 @@
-# pyCATHY plant model DA
+# pyCATHY plant model DA 🌱💧
 
 This documentation provides an overview of the project code and presents the encouraging results obtained through the implementation of Data Assimilation (DA) techniques to enhance the performance of the CATHY hydrological model solver and invert model parameters.
 
@@ -12,20 +12,23 @@ DA using pyCATHY has shown promising results for:
   
 1 article based on the outcomes of this work (in prep.)
 
-## Expanding Assimilation Scope
+## Expanding Assimilation Scope 🪝
+
 We are considering the incorporation of plant data observations such as **leaf water potential** or **stem flow** as additional assimilation observations. This expansion has the potential to provide valuable insights and contribute to a more comprehensive understanding of the hydrological model.
 
 
 ### The CATHY plant model
 
-CATHY V1: Feddes 1D RWU sink term
+- While CATHY V1 uses the Feddes 1D RWU sink term approach, **CATHY plant model** uses a modeling framework that combines a 1D description of stem water flow, leaf-level photosynthesis, and transpiration with a **3D representation of soil-root water exchanges**.
+  - [plant inputs parameters](plant_inputs)
+  - [plant outputs files](plant_outputs)
 
-CATHY plant model: modeling framework that combines a 1D description of stem water flow, leaf-level photosynthesis, and transpiration with a **3D representation of soil-root water exchanges**.
+- Source files are different from the [CATHY V1](https://bitbucket.org/cathy1_0/cathy/src/master/). 
+  - [source files](/src/)
 
-
-Source files are different from the [CATHY V1](https://bitbucket.org/cathy1_0/cathy/src/master/). 
-- Work from Laura Busato - see [Busato](/examples/Busato/)
-- Work from Gabriele - see [Manoli](/examples/1_Gabriele_Piante_NON_modificato/)
+- Examples from literrature
+  - Work from Laura Busato - see [Busato](/examples/Busato/)
+  - Work from Gabriele - see [Manoli](/examples/1_Gabriele_Piante_NON_modificato/)
 
 ### DA Procedure within CATHY plant model
 
@@ -35,7 +38,14 @@ The procedure to prepare is logistically the same with a few changes:
 - Input preparation 
 - Mapping operator (to write)
 
-### Bugs
+## Bugs 🐛
 
-- See ?
-- See 
+- See [Compilation issue](https://github.com/BenjMy/pyCATHY_plant/issues/1#issue-1782683943)
+- See [Processor issue]()
+
+## Authors 
+
+- L. Busato
+- B. Mary
+
+
