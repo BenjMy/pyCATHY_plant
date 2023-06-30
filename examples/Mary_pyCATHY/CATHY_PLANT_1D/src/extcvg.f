@@ -1,0 +1,40 @@
+C
+C**************************  EXTCVG ************************************
+C
+C  check for convergence of seepage face exit points 
+C
+C***********************************************************************
+C
+      SUBROUTINE EXTCVG(NSF,NSFNOD,SFEX,SFEXIT,TIME,DELTAT,ITER,KSF)
+C
+      IMPLICIT  NONE
+      INCLUDE  'CATHY.H'
+      INTEGER   I
+      INTEGER   NSF,ITER,KSF
+      INTEGER   NSFNOD(NSFMAX,*),SFEX(*),SFEXIT(*)
+      REAL*8    TIME,DELTAT
+      INCLUDE  'IOUNITS.H'
+C
+      KSF=0
+      DO I=1,NSF
+         IF (SFEX(I) .NE. SFEXIT(I)) KSF=KSF + 1
+      END DO
+      WRITE(IOUT10,1100) TIME,DELTAT,ITER
+      WRITE(IOUT10,1105) 
+      WRITE(IOUT10,1115) (SFEXIT(I),NSFNOD(I,SFEXIT(I)),I=1,NSF)
+      WRITE(IOUT10,1110) 
+      WRITE(IOUT10,1115) (SFEX(I),NSFNOD(I,SFEX(I)),I=1,NSF)
+      IF (KSF .EQ. 0) THEN
+         WRITE(IOUT10,1120) 
+      ELSE
+         WRITE(IOUT10,1125)
+      END IF
+C
+      RETURN
+ 1100 FORMAT(/,' (TIME=',1PE12.4,', DELTAT=',1PE12.4,', ITER=',I5,')')
+ 1105 FORMAT(  1X,'EXIT POINTS PREV ITER: NODE (NODE #)')
+ 1110 FORMAT(  1X,'EXIT POINTS CURR ITER: NODE (NODE #)')
+ 1115 FORMAT(6(2X,I3,'(',I6,')'))
+ 1120 FORMAT(1X,'SEEPAGE FACE EXIT POINTS CONVERGED',/)
+ 1125 FORMAT(1X,'SEEPAGE FACE EXIT POINTS DID NOT CONVERGE',/)
+      END

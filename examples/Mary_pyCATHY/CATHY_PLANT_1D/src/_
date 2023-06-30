@@ -1,0 +1,357 @@
+C
+C --------------------------  PLANT_GROWTH  --------------------------------
+C 
+C   Subroutine for the simulation of crop growth, modified from the model
+C   SUCROS (SUCROS1_97 V1.0)
+C
+C --------------------------------------------------------------------------  
+C
+      SUBROUTINE PLANT_GROWTH(TIME,DELTAT,DAVTMP,FCDAY)
+
+
+C 1.1 INTRODUCTION
+C --------------------------------------------------------------------------  
+C    The model for potential growth (example: spring wheat) 
+C    is described in:
+C      
+C    J. Goudriaan & H.H. van Laar, 1994. Modelling Potential Crop     
+C       Growth Processes. Textbook with Exercises. Kluwer Academic    
+C       Publishers, Dordrecht, The Netherlands, 238 pp.               
+C
+C    The model is modified and coupled with CATHY Root Water Uptake
+C    (August 2012 - Manoli & Bonetti)
+C
+C --------------------------------------------------------------------------  
+
+
+      IMPLICIT NONE 
+
+      INCLUDE 'CATHY.H'
+      INCLUDE 'PLANT.H'
+      INCLUDE 'IOUNITS.H'
+
+      INTEGER I,J,K
+      REAL*8 TIME,DELTAT
+      REAL*8 LAI2,WLV,WLVG,WST,WRT,WLVD,WSO,DVS,EAI,TNASSI
+      REAL*8 DVR,DVRVT,DVRRT,DAVTMP
+      REAL*8 FCDAY,GPHOT,MAINT,MAINTS,MNDVS,TEFF
+      REAL*8 FSH,FRT,FLV,FST,FSO,ERRSH,ASRQ,TRANSL
+      REAL*8 FSHLV,FSHST,FSHSO
+      REAL*8 PLANT_FSH,PLANT_FLV,PLANT_FST,PLANT_FSO
+      REAL*8 GTW,GRT,GLV,GST,GSO
+      REAL*8 DLV,RWLVG,TADRW,TDRW
+      REAL*8 TAI,REAI,RLAI,GLAI,DLAI,RDR,RDRDV,RDRSH
+      REAL*8 AA,BB,CC,DD,DTEFF
+
+
+C **************************************************************************
+C PARAMETERS - to be read as input:
+
+      REAL*8 ILAI,WLVI,WSTI,WRTI,WLVDI,WSOI,IDVS,IEAI
+      REAL*8 CFLV,CFST,CFRT,CFSO
+      REAL*8 Q10,TREF,MAINLV,MAINST,MAINRT,MAINSO
+      REAL*8 ASRQRT,ASRQLV,ASRQST,ASRQSO,FRTRL,CONVL
+      REAL*8 FRDR,LAICR,RGRL,SLA,EAR,TBASE
+      
+
+      ILAI  = 0.012
+      WLVI  = 0.5
+      WSTI  = 0.3 
+      WRTI  = 0.8
+      WLVDI = 0
+      WSOI  = 0
+      IDVS  = 0
+      IEAI  = 0
+
+c     g C / g DM
+      CFLV = 0.459
+      CFST = 0.494 
+      CFRT = 0.467 
+      CFSO = 0.471
+      
+      Q10  = 2
+      TREF = 25
+
+c     g CHO / g DM / d ---> g CHO / gDM / s
+      MAINLV = 0.03/86400
+      MAINST = 0.015/86400
+      MAINRT = 0.015/86400
+      MAINSO = 0.01/86400
+
+c     g CHO / g DM
+      ASRQRT = 1.444
+      ASRQLV = 1.463
+      ASRQST = 1.513
+      ASRQSO = 1.415
+      FRTRL = 0.200
+      CONVL = 0.947
+
+
+      FRDR = 1
+      LAICR = 4.0
+
+c     1/ *C / d  ---> ... / s
+      RGRL = 0.009/86400
+
+      SLA = 0.022
+      EAR = 0.6e-3
+      TBASE = 0
+
+C **************************************************************************
+
+
+
+
+C 1.2 INITIAL CONDITION
+C --------------------------------------------------------------------------  
+
+c Before Emergence
+
+C **************************************************************************
+
+      IF(TIME.LE.GROWIN) THEN
+c              LAI2 = 0.0
+c              WLV  = 0.0
+c              WLVG = 0.0
+c              WST  = 0.0 
+c              WRT  = 0.0
+c              WLVD = 0.0
+c              WSO  = 0.0
+c              DVS  = 0.0
+c              EAI  = 0.0
+C Emergence
+c      ELSEIF(TIME.EQ.GROWIN) THEN
+              LAI2  = ILAI
+              WLV  = WLVI
+              WLVG  = WLVI
+              WST  = WSTI 
+              WRT  = WRTI
+              WLVD = WLVDI
+              WSO  = WSO
+              DVS  = IDVS
+              EAI  = IEAI
+
+c Initialization of TNASS: total CO2 equivalents initially available
+      TNASSI     = (WLVI*CFLV + WSTI*CFST + WRTI*CFRT) * 44./12.
+
+
+C 1.3 CROP DEVELOPMENT
+C --------------------------------------------------------------------------  
+
+      ELSEIF(TIME.GT.GROWIN) THEN
+
+c FUNCTION DVRVT(DAVTMP)  ------------------------------
+c
+c calculate the development rate DVR as a function of 
+c daily average temperature (DAVTMP) for the period 
+c from emergence till flowering (pre-anthesis, DVRVT) 
+c and from flowering till maturity (post-anthesis, DVRRT)
+
+c da sistemare
+
+          IF(DAVTMP.LT.0) THEN
+                  DVRVT =0.0
+                  DVRRT =0.0
+          ELSE
+                  DVRVT = 0.027/30*DAVTMP
+                  DVRRT = 0.031/30*DAVTMP
+          ENDIF
+c------------------------------------------------------
+
+c phenological development stage (DVS) of the crop 
+c d-1 ---> s-1 (LDAY)
+
+          IF(DVS-1.LT.0) THEN
+                  DVR = DVRVT/LDAY
+          ELSE
+                  DVR = DVRRT/LDAY
+          ENDIF
+
+          DVS = DVS + DVR*DELTAT
+
+C 1.4 CARBOHYDRATE PRODUCTION
+C --------------------------------------------------------------------------  
+
+c conversion of CO2 to carbohydrates assuming that:
+c CO2 + H2O --> CH2O + O2
+c
+c MW(CO2)  = 44 g/mol
+c MW(CH2O) = 30 g/mol
+
+c FC = mumol/m2/s ????????????? (DAY - Sec ???????) 
+c GPHOT daily total gross CH2O assimilation of the crop [gCH2O/m2/d]
+
+c      GPHOT = FC*30/44 
+      
+      GPHOT = FCDAY*1e-6*44
+
+
+
+C 1.5 MAINTENANCE RESPIRATION
+C --------------------------------------------------------------------------  
+
+          MAINTS = MAINLV*WLVG+MAINST*WST+MAINRT*WRT+MAINSO*WSO  
+          TEFF = Q10**((DAVTMP-TREF)/10)
+          IF(WLV.NE.0) THEN
+                  MNDVS = WLVG/WLV
+          ELSE
+                  MNDVS = WLVG
+          ENDIF
+          MAINT = MAINTS*TEFF*MNDVS
+
+
+C 1.6 DRY MATTER PARTITIONING
+C --------------------------------------------------------------------------  
+  
+          FSH = PLANT_FSH(DVS)
+          FRT = 1-FSH
+
+          FLV = PLANT_FLV(DVS)
+          FST = PLANT_FST(DVS)
+          FSO = PLANT_FSO(DVS)
+
+c for plot
+          FSHLV = FSH*FLV
+          FSHST = FSH*FST
+          FSHSO = FSH*FSO
+
+c check
+          ERRSH = ABS(FLV+FST+FSO-1)
+c         IF(ERRSH.GT.1e-6) THEN
+c            WRITE(IOUT2,*) 'ERROR in DRY MATTER PARTITIONING'
+c            WRITE(IOUT2,*) 'ERRSH > 1e-6'
+c            STOP
+c         ENDIF         
+
+
+
+C 1.7 GROWTH RATES OF PLANT ORGANS AND TRANSLOCATION
+C --------------------------------------------------------------------------  
+
+c ASRQR = [g CH2O / g DM]
+
+           ASRQ = FSH*(ASRQLV*FLV+ASRQST*FST+ASRQSO*FSO)+ASRQRT*FRT
+
+           IF(DVS-1.LT.0) THEN
+                   TRANSL = 0
+           ELSE
+                   TRANSL = WST*DVR*FRTRL
+           ENDIF
+
+           GTW = (GPHOT-MAINT+CONVL*TRANSL*CFST*30./12.)/ASRQ
+           GRT = FRT*GTW 
+           GLV = FLV*FSH*GTW
+           GST = FST*FSH*GTW-TRANSL
+           GSO = FSO*FSH*GTW
+
+
+C 1.8 LEAF AND EAR DEVELOPMENT
+C --------------------------------------------------------------------------  
+
+           TAI = 0.5*EAI + LAI2
+c--------------------------------
+c GLAI
+c---------------------------------
+c computes daily increase of leaf 
+c area index LAI2
+c GLAI [m2 leaf / m2 ground / d]           
+           
+c maturation stage
+           GLAI = SLA*GLV
+
+c juvenile stage
+           IF((DVS.LT.0.3).AND.(LAI2.LT.0.75)) THEN
+                   CC = 0.0
+                   DD = DAVTMP - TBASE
+                   DTEFF = MAX(CC,DD)
+                   GLAI =(LAI2*(EXP(RGRL*DTEFF*DELTAT)-1))/DELTAT
+c                   GLAI =(LAI2*(EXP(RGRL*DTEFF*DELTAT/LDAY)-1))
+c     1                   /DELTAT
+           ENDIF
+c---------------------------------
+
+c RLAI & REAI
+
+c RLAI
+           IF(DVS-1.LT.0) THEN
+                   RDRDV = 0.0
+           ELSE
+                   AA = 0.1
+                   RDRDV = DVR/(MAX(AA,2-DVS))*FRDR
+           ENDIF
+
+           BB = 0.03*(LAI2-LAICR)/LAICR
+
+           IF((BB.GE.0).AND.(BB.LE.0.03)) THEN
+                   RDRSH = BB
+           ELSEIF(BB.LT.0) THEN
+                   RDRSH = 0
+           ELSEIF(BB.GT.0.03) THEN
+                   RDRSH = 0.03
+           ENDIF
+
+c RDRDV = [s-1]
+c RDRSH = [d-1] ---> ... / LDAY = [s-1] 
+           RDR = MAX(RDRDV,RDRSH/LDAY)
+
+c --------------------------------
+c REAI
+c---------------------------------
+c calculates ear area index
+
+           IF (DVS.LT.0.8) REAI = 0.
+           IF ((DVS.GE.0.8).AND.(EAI.EQ.0.)) THEN
+                   REAI = (EAR*TADRW)/DELTAT
+           ELSE
+                   REAI = 0.
+           ENDIF
+           IF (DVS.GE.1.3) REAI = -RDRDV * EAI
+c----------------------------------
+
+c LAI & EAI
+
+           DLAI = LAI2 * RDR
+           RLAI = GLAI - DLAI
+
+           LAI2 = LAI2 + RLAI*DELTAT
+           EAI = EAI + REAI*DELTAT 
+
+           IF(LAI2.NE.0) THEN
+                  DLV = WLVG*DLAI/LAI2
+           ELSE
+                  DLV = WLVG*DLAI
+           ENDIF
+                 
+           RWLVG = GLV - DLV
+
+C 1.9 DRY MATTER PRODUCTION
+C --------------------------------------------------------------------------  
+
+           WRT  = WRT + GRT*DELTAT
+           WLVG = WLVG + RWLVG*DELTAT
+           WLVD = WLVD + DLV*DELTAT
+           WST  = WST + GST*DELTAT
+           WSO  = WSO + GSO*DELTAT
+
+c Total above ground dry matter TADRM = [g DM / m2]
+           WLV = WLVG + WLVD
+           TADRW = WLV + WST + WSO
+
+c Total dry matter TDRW = [g DM / m2]           
+           TDRW = TADRW + WRT
+
+
+
+C **************************************************************************
+
+      ENDIF
+
+      write(1122,*) TIME,DVS,FSH,FRT,FSHLV,FSHST,FSHSO,ERRSH
+      write(IOUT72,*) TIME,WRT,WLVG,WLVD,WLV,WST,WSO,TADRW,TDRW,LAI2
+      write(2222,*) TIME/86400, DELTAT, DAVTMP, DVRVT, DVRRT, DVR, DVS 
+
+C **************************************************************************
+
+      RETURN
+ 
+      END 

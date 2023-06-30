@@ -53,12 +53,10 @@ c          IF(DAVTMP.LT.0)DVR = 0.0
 
 C DRY MATTER PARTITIONING
 C --------------------------------------------------------------------------  
-          open(22,file='debugplant',status='unknown')
-          write(22, *) "test", DVS
-          close(22)
+  
           FSH = PLANT_FSH(DVS)
           FRT = 1-FSH
-          FRT_MAX = 1-PLANT_FSH(REAL(DVS, 8))
+          FRT_MAX = 1-PLANT_FSH(0)
           ROOTGROWTH = 1-FRT/FRT_MAX
 
           FLV = PLANT_FLV(DVS)

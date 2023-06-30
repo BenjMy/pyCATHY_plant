@@ -1,0 +1,213 @@
+
+     ISIMGR (0 FLOW3D only w/ grid input, 
+             1 FLOW3D only w/ DEM input, 
+             2 FLOW3D and SURF_ROUTE w/ DEM) =      0
+     PONDH_MIN (MIN. PONDING HEAD)           =     1.00000E+10
+     DAFLAG                                  =      0
+     IPRT1  (FOR OUTPUT OF INPUT DATA)       =      1
+     IPRT   (FOR ELEM VEL & DET NODAL OUTPUT)=      2
+     NPRT   (# OF TIME VALUES FOR DET OUTPUT)=      3
+     NUMVP  (# OF SURF NODES FOR VP OUTPUT)  =      1
+     NR     (# OF NODES FOR PARTIAL OUTPUT)  =      4
+
+     KSLOPE (0 ANA, 1 KSL/ANA, 2 KSL/C-DIFF,
+             3 LOC KSL/ANA, 4 LOC TAN-SLOPE) =      0
+     TOLKSL (TOLERANCE FOR CHORD SLOPE)      =     1.00000E-02
+
+     ISFONE (0 ALL-NODE SFEX UPD, 1 1-NODE)  =      0
+     ISFCVG (0 NL CONVG W/O SFEX, 1 W/ SFEX) =      0
+     TETAF  (EG: 1 BACKWARD EULER, 0.5 C-N)  =     1.00000E+00
+     LUMP   (MASS LUMPING IF NONZERO)        =      1
+     IOPT   (1 PICARD, 2 NEWTON)             =      1
+     NLRELX (0 NORELX,1 CONS RELX,2 VAR RELX)=      1
+     OMEGA  (RELAXATION PARAMETER, CONSTANT) =     2.00000E-01
+     L2NORM (0 INFINITY NORM, ELSE L2 NORM)  =      0
+     TOLUNS (TOLERANCE FOR NONLINEAR ITER)   =     5.00000E-03
+     TOLSWI (TOLERANCE FOR BC SWITCHING)     =     1.00000E+30
+     ERNLMX (MAX ALLOWABLE CVG OR RESID ERR) =     1.00000E+30
+     ITUNS  (MAX NONLINEAR ITER / TIME STEP) =     30
+     ITUNS1 (DELTAT INCREASE THRESHOLD)      =      6
+     ITUNS2 (DELTAT DECREASE THRESHOLD)      =     12
+
+     ISOLV  (-5 BiCGSTAB w/ diag precond, 
+             -4 BiCGSTAB without precond, 
+             -3 TFQMR   w/ diag precond, 
+             -2 TFQMR   without precond, 
+             -1 TFQMR   w/ K^-1  precond, 
+              0 BiCGSTAB w/ K^-1  precond, 
+              1 GRAMRB (min residual), 
+              2 GCRK(5) (ORTHOMIN), 
+              3 NONSYM (direct solver))      =      0
+     ITMXCG (MAX ITER FOR CG LINEAR SOLVERS) =    500
+     TOLCG  (TOLER. FOR CG LINEAR SOLVERS)   =     1.00000E-10
+
+     DELTAT (INITIAL TIME STEP SIZE)         =     1.20000E+02
+     DTMIN  (MINIMUM TIME STEP SIZE)         =     1.00000E-02
+     DTMAX  (MAXIMUM TIME STEP SIZE)         =     1.20000E+03
+     TMAX   (TIME AT END OF SIMULATION)      =     8.64000E+05
+     DTMAGA (MAG. FACTOR FOR DELTAT, ADD.)   =     0.00000E+00
+     DTMAGM (MAG. FACTOR FOR DELTAT, MULT.)  =     1.20000E+00
+     DTREDS (RED. FACTOR FOR DELTAT, SUB.)   =     0.00000E+00
+     DTREDM (RED. FACTOR FOR DELTAT, MULT.)  =     8.00000E-01
+
+     NNOD   (# OF NODES IN 2-D MESH)         =      9
+     NTRI   (# OF TRIANGLES IN 2-D MESH)     =      8
+     NZONE  (NUMERO ZONE (MATERIAL TYPES))   =      1
+     NSTR   (NUMERO STRATI)                  =     19
+     N1     (NUM. MAX CONTATTI NODALI)       =     30
+
+     IVERT  (TYPE OF VERTICAL DISCRETIZATION)=      0
+     ISP    (0 FLAT SURFACE, ELSE NOT FLAT)  =      0
+     BASE   (THICKNESS OR BASE OF 3-D MESH)  =     5.00000E+00
+     LAYER   1     ZRATIO =   1.00000E-02
+     LAYER   2     ZRATIO =   1.00000E-02
+     LAYER   3     ZRATIO =   1.00000E-02
+     LAYER   4     ZRATIO =   1.00000E-02
+     LAYER   5     ZRATIO =   1.00000E-02
+     LAYER   6     ZRATIO =   1.00000E-02
+     LAYER   7     ZRATIO =   2.00000E-02
+     LAYER   8     ZRATIO =   2.00000E-02
+     LAYER   9     ZRATIO =   2.00000E-02
+     LAYER  10     ZRATIO =   2.00000E-02
+     LAYER  11     ZRATIO =   2.00000E-02
+     LAYER  12     ZRATIO =   2.00000E-02
+     LAYER  13     ZRATIO =   2.00000E-02
+     LAYER  14     ZRATIO =   1.00000E-01
+     LAYER  15     ZRATIO =   1.00000E-01
+     LAYER  16     ZRATIO =   1.00000E-01
+     LAYER  17     ZRATIO =   1.00000E-01
+     LAYER  18     ZRATIO =   2.00000E-01
+     LAYER  19     ZRATIO =   2.00000E-01
+
+      SURFACE ELEVATION VALUES
+    1   0.0000E+00    2   0.0000E+00    3   0.0000E+00    4   0.0000E+00
+    5   0.0000E+00    6   0.0000E+00    7   0.0000E+00    8   0.0000E+00
+    9   0.0000E+00
+
+     PMIN  (AIR DRY PRESSURE HEAD VALUE)     =    -1.00000E+01
+     IPEAT (flag for peat deformation)       =      0
+     IVGHU (-1 moisture curve lookup table, 
+            0 van Genuchten, 
+            1 extended van Genuchten, 
+            2 Huyakorn with Kr=Se**n, 
+            3 Huyakorn with log_10 Kr(Se), 
+            4 Brooks-Corey)                  =      0
+     VGN                                     =     1.40000E+00
+     VGRMC                                   =     3.00000E-02
+     VGPSAT                                  =    -1.00000E-01
+
+
+     SATURATED HYDRAULIC CONDUCTIVITY, SPECIFIC STORAGE, AND POROSITY VALUES
+  LAYER MAT.TYPE  X-PERM       Y-PERM       Z-PERM       STORAGE      POROSITY
+ PLANT PARAMETERS
+NPLANT =     1  NPTYPE =     1
+NMETEODATA =5
+ RHOW =   1000000.0000000000     
+ COATM,CCO2STAR,CCO2ATM=   210.00000000000000        400.00000000000000        380.00000000000000     
+ SSTOMA,ASTOMA =  0.69999999999999996        1.6000000000000001     
+ TOLLNR,ITMAXNR,PSILEAF0=   9.9999999999999995E-007          30  -20.000000000000000     
+ PSTEP,NPMED =   24.000000000000000             3600
+ INODP,ITYPEP =           5           1
+ XMAXP,YMAXP,ZMAXP =   2.5000000000000000        2.5000000000000000        1.0000000000000000     
+ VRUX,VRUY,VRUZ =   1.0000000000000000        1.0000000000000000        1.0000000000000000     
+ VRUX1,VRUY1,VRUZ1 =   0.0000000000000000        0.0000000000000000       0.20000000000000001     
+ LAI =   4.0000000000000000     
+ GXYLEM_MAX,C_GXYLEM,D_GXYLEM =   5.0000000000000004E-006   2.0000000000000000        200.00000000000000     
+ VCMAX25,KC25,KO25,COMP25 =   41.000000000000000        300.00000000000000        300.00000000000000        2.6000000000000001     
+ LA_MAX,LA_BETA,LA_PSILMAX =   1755.0000000000000        1.2000000000000000E-005  -277.00000000000000     
+ PSILMAX,LIMIT=  -500.00000000000000        1.4999999999999999E-002
+ HCANO,DATALEAF,ACANO,AXYLEM =   17.000000000000000               30   9.0000000000000000        5.9999999999999998E-002
+ GROOT_STAR,GSOIL_STAR =   3.0000000000000000E-011   1.0000000000000000E-004
+ SALT_TOX=  0.50000000000000000     
+
+     N     (# OF NODES IN 3-D MESH)          =      180
+     NT    (# OF TETRAHEDRA IN 3-D MESH)     =      456
+
+     NTERM (# OF NONZERO TERMS IN SYS. MAT.) =      975
+
+  INITIAL PRESSURE HEAD (HYDROSTATIC, PART. SAT.)
+     1   -2.000E+00     2   -2.000E+00     3   -2.000E+00     4   -2.000E+00
+     5   -2.000E+00     6   -2.000E+00     7   -2.000E+00     8   -2.000E+00
+     9   -2.000E+00    10   -1.950E+00    11   -1.950E+00    12   -1.950E+00
+    13   -1.950E+00    14   -1.950E+00    15   -1.950E+00    16   -1.950E+00
+    17   -1.950E+00    18   -1.950E+00    19   -1.900E+00    20   -1.900E+00
+    21   -1.900E+00    22   -1.900E+00    23   -1.900E+00    24   -1.900E+00
+    25   -1.900E+00    26   -1.900E+00    27   -1.900E+00    28   -1.850E+00
+    29   -1.850E+00    30   -1.850E+00    31   -1.850E+00    32   -1.850E+00
+    33   -1.850E+00    34   -1.850E+00    35   -1.850E+00    36   -1.850E+00
+    37   -1.800E+00    38   -1.800E+00    39   -1.800E+00    40   -1.800E+00
+    41   -1.800E+00    42   -1.800E+00    43   -1.800E+00    44   -1.800E+00
+    45   -1.800E+00    46   -1.750E+00    47   -1.750E+00    48   -1.750E+00
+    49   -1.750E+00    50   -1.750E+00    51   -1.750E+00    52   -1.750E+00
+    53   -1.750E+00    54   -1.750E+00    55   -1.700E+00    56   -1.700E+00
+    57   -1.700E+00    58   -1.700E+00    59   -1.700E+00    60   -1.700E+00
+    61   -1.700E+00    62   -1.700E+00    63   -1.700E+00    64   -1.600E+00
+    65   -1.600E+00    66   -1.600E+00    67   -1.600E+00    68   -1.600E+00
+    69   -1.600E+00    70   -1.600E+00    71   -1.600E+00    72   -1.600E+00
+    73   -1.500E+00    74   -1.500E+00    75   -1.500E+00    76   -1.500E+00
+    77   -1.500E+00    78   -1.500E+00    79   -1.500E+00    80   -1.500E+00
+    81   -1.500E+00    82   -1.400E+00    83   -1.400E+00    84   -1.400E+00
+    85   -1.400E+00    86   -1.400E+00    87   -1.400E+00    88   -1.400E+00
+    89   -1.400E+00    90   -1.400E+00    91   -1.300E+00    92   -1.300E+00
+    93   -1.300E+00    94   -1.300E+00    95   -1.300E+00    96   -1.300E+00
+    97   -1.300E+00    98   -1.300E+00    99   -1.300E+00   100   -1.200E+00
+   101   -1.200E+00   102   -1.200E+00   103   -1.200E+00   104   -1.200E+00
+   105   -1.200E+00   106   -1.200E+00   107   -1.200E+00   108   -1.200E+00
+   109   -1.100E+00   110   -1.100E+00   111   -1.100E+00   112   -1.100E+00
+   113   -1.100E+00   114   -1.100E+00   115   -1.100E+00   116   -1.100E+00
+   117   -1.100E+00   118   -1.000E+00   119   -1.000E+00   120   -1.000E+00
+   121   -1.000E+00   122   -1.000E+00   123   -1.000E+00   124   -1.000E+00
+   125   -1.000E+00   126   -1.000E+00   127   -5.000E-01   128   -5.000E-01
+   129   -5.000E-01   130   -5.000E-01   131   -5.000E-01   132   -5.000E-01
+   133   -5.000E-01   134   -5.000E-01   135   -5.000E-01   136    0.000E+00
+   137    0.000E+00   138    0.000E+00   139    0.000E+00   140    0.000E+00
+   141    0.000E+00   142    0.000E+00   143    0.000E+00   144    0.000E+00
+   145    5.000E-01   146    5.000E-01   147    5.000E-01   148    5.000E-01
+   149    5.000E-01   150    5.000E-01   151    5.000E-01   152    5.000E-01
+   153    5.000E-01   154    1.000E+00   155    1.000E+00   156    1.000E+00
+   157    1.000E+00   158    1.000E+00   159    1.000E+00   160    1.000E+00
+   161    1.000E+00   162    1.000E+00   163    2.000E+00   164    2.000E+00
+   165    2.000E+00   166    2.000E+00   167    2.000E+00   168    2.000E+00
+   169    2.000E+00   170    2.000E+00   171    2.000E+00   172    3.000E+00
+   173    3.000E+00   174    3.000E+00   175    3.000E+00   176    3.000E+00
+   177    3.000E+00   178    3.000E+00   179    3.000E+00   180    3.000E+00
+
+     AREATOT (TOTAL CATCHMENT SURFACE AREA)  =     2.50000E+01
+     VOLTOT  (TOT VOL OF DISCRETIZED CATCH.) =     1.25000E+02
+
+     NATM, NSF DIRICHLET BCs AT BEGINNING OF SIMULATION
+     #  NODE  BC VALUE        #  NODE  BC VALUE        #  NODE  BC VALUE    
+     1     1  -2.00000E+00    2     2  -2.00000E+00    3     3  -2.00000E+00
+     4     4  -2.00000E+00    5     6  -2.00000E+00    6     7  -2.00000E+00
+     7     8  -2.00000E+00    8     9  -2.00000E+00    9    10  -1.95000E+00
+    10    11  -1.95000E+00   11    12  -1.95000E+00   12    13  -1.95000E+00
+    13    15  -1.95000E+00   14    16  -1.95000E+00   15    17  -1.95000E+00
+    16    18  -1.95000E+00   17    19  -1.90000E+00   18    20  -1.90000E+00
+    19    21  -1.90000E+00   20    22  -1.90000E+00   21    24  -1.90000E+00
+    22    25  -1.90000E+00   23    26  -1.90000E+00   24    27  -1.90000E+00
+    25    28  -1.85000E+00   26    29  -1.85000E+00   27    30  -1.85000E+00
+    28    31  -1.85000E+00   29    33  -1.85000E+00   30    34  -1.85000E+00
+    31    35  -1.85000E+00   32    36  -1.85000E+00   33    37  -1.80000E+00
+    34    38  -1.80000E+00   35    39  -1.80000E+00   36    40  -1.80000E+00
+    37    42  -1.80000E+00   38    43  -1.80000E+00   39    44  -1.80000E+00
+    40    45  -1.80000E+00   41    46  -1.75000E+00   42    47  -1.75000E+00
+    43    48  -1.75000E+00   44    49  -1.75000E+00   45    51  -1.75000E+00
+    46    52  -1.75000E+00   47    53  -1.75000E+00   48    54  -1.75000E+00
+    49    55  -1.70000E+00   50    56  -1.70000E+00   51    57  -1.70000E+00
+    52    58  -1.70000E+00   53    60  -1.70000E+00   54    61  -1.70000E+00
+    55    62  -1.70000E+00   56    63  -1.70000E+00   57    64  -1.60000E+00
+    58    65  -1.60000E+00   59    66  -1.60000E+00   60    67  -1.60000E+00
+    61    69  -1.60000E+00   62    70  -1.60000E+00   63    71  -1.60000E+00
+    64    72  -1.60000E+00   65    73  -1.50000E+00   66    74  -1.50000E+00
+    67    75  -1.50000E+00   68    76  -1.50000E+00   69    78  -1.50000E+00
+    70    79  -1.50000E+00   71    80  -1.50000E+00   72    81  -1.50000E+00
+    73    82  -1.40000E+00   74    83  -1.40000E+00   75    84  -1.40000E+00
+    76    85  -1.40000E+00   77    87  -1.40000E+00   78    88  -1.40000E+00
+    79    89  -1.40000E+00   80    90  -1.40000E+00   81    91  -1.30000E+00
+    82    92  -1.30000E+00   83    93  -1.30000E+00   84    94  -1.30000E+00
+    85    96  -1.30000E+00   86    97  -1.30000E+00   87    98  -1.30000E+00
+    88    99  -1.30000E+00   89   100  -1.20000E+00   90   101  -1.20000E+00
+    91   102  -1.20000E+00   92   103  -1.20000E+00   93   105  -1.20000E+00
+    94   106  -1.20000E+00   95   107  -1.20000E+00   96   108  -1.20000E+00
+    97   109  -1.10000E+00   98   110  -1.10000E+00   99   111  -1.10000E+00
+   100   112  -1.10000E+00  101   114  -1.10000E+00  102   115  -1.10000E+00

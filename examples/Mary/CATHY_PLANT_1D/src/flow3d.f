@@ -1,0 +1,541 @@
+C
+C**************************  FLOW3D ************************************
+C
+C  subsurface three-dimensional variably saturated flow solver
+C
+C***********************************************************************
+C
+      SUBROUTINE FLOW3D(IOPT,IPRT1,NLRELX,L2NORM,N,NT,NTRI,NTERM,NSTR,
+     1                  NDIR,NDIRC,NP,NQ,HSPATM,HTIATM,HTIDIR,HTINEU,
+     2                  ITER,ITUNS,NITER,NITERT,ITLIN,ITRTOT,
+     3                  ISOLV,ITMXCG,IPEAT,IVGHU,KSLOPE,ISFONE,KSFCV,
+     4                  KSFCVT,IBOT,MINBOT,NNOD,NUMDIR,NSF,KLSFAI,
+     5                  NLKP,NUDN,NUDC,NUDCTR,NUDFLAG,WFLAG,
+     6                  TP,TETRA,TETJA,IA,JA,TOPOL,CONTP,CONTQ,IVOL,
+     7                  INSYM,IFATM,IFATMP,NODDIR,NSFNUM,NSFNOD,
+     8                  SFEX,SFEXIT,SFEXP,SFFLAG,NUDTET,DUPUIT,
+     9                  SURF,PONDING,
+     A                  DTGMIN,LSFAIL,ERRGMX,NORMCV,ITAGEN,SFCHEK,
+     B                  KSFZER,NOBACK,BCKSTP,CPUVEC,CPUNL,TIME,TIMEP,
+     C                  DELTAT,DTMIN,DTREDM,DTREDS,TETAF,OMEGA,OMEGAP,
+     D                  RMAX,RMIN,TOLUNS,TOLSWI,TOLCG,ERNLMX,
+     E                  PONDH_MIN,NUDG,
+     F                  PONDNOD,OVFLNOD,PERMX,PERMY,PERMZ,INDE0,
+     G                  SNODI,PNODI,PORE,INDE,PRESC,PTIM,PINP,DEF,
+     H                  Q,QTIM,QINP,ATMTIM,ATMINP,AI,BI,CI,DI,LMASS,
+     I                  ARENOD,VOLNOD,VOLU,VOLUR,
+     J                  ETAI,ETAE,DETAI,DETAIE,SW,SWE,
+     K                  CKRW,CKRWE,DCKRW,DCKRWE,SENODI,SEELT,
+     L                  POLD,PDIFF,PTOLD,PNEW,PTNEW,PTIMEP,
+     M                  TNOTI,XT5,LHSP,COEF1,COEF2,COEF3,SCR,
+     N                  RNSYM,ATMACT,ATMPOT,ATMOLD,LHSATM,LHSSF,
+     O                  QPNEW,QPOLD,SFQ,SFQP,X,Y,Z,
+     P                  NUDTIM,NUDRXY,NUDRZ,NUDX,NUDY,NUDZ,NUDCUM,
+     Q                  NUDEPS,NUDDIF,NUDSMC,NUDNOD,NUDVAL,NUDTAU,
+     R                  PLANT_FLAG,METEO,KS,SUMRDF,
+     S                  PLNNOD,PLNODES,QPLANT,NSTEP,TIME_HOUR,PSI_HOUR,
+     T                  HOUR,TIMING,PSIMEAN_H,TRASP,FC,QTOT,GSTOMA,
+     U                  PSILEAF,LASTOMA,PSIR,CCI,CUMSUMFC,
+     V                  AVTMP,TMPTIME,GROWTH_FLAG,SALT_FLAG,SALT3D,
+     Z                  RDFstamp,SALT_FACTOR,ZABL,ABL_FLAG,HRTIME,
+     1                  HR_DAY,ZLCLOLD,ZABLOLD,TAIR,WAIR,NMETEODATA)
+
+C
+      IMPLICIT NONE
+      INCLUDE 'CATHY.H'
+      INTEGER  IKMAX,KSF
+      INTEGER  I,II,J
+      INTEGER  IOPT,IPRT1,NLRELX,L2NORM,N,NT,NTRI,NTERM,NSTR
+      INTEGER  NDIR,NDIRC,NP,NQ,HSPATM,HTIATM,HTIDIR,HTINEU
+      INTEGER  ITER,ITUNS,NITER,NITERT,ITLIN,ITRTOT
+      INTEGER  ISOLV,ITMXCG,IPEAT,IVGHU,KSLOPE,ISFONE,KSFCV,KSFCVT
+      INTEGER  IBOT,MINBOT,NNOD,NUMDIR,NSF,KLSFAI,DUPUIT
+      INTEGER  NLKP,NUDN,NUDC,NUDCTR,NUDFLAG,WFLAG
+      INTEGER  TETRA(5,*),TETJA(4,4,*),IA(*),JA(*),TOPOL(*)
+      INTEGER  CONTP(*),CONTQ(*),IVOL(*),TP(*)
+      INTEGER  INSYM(*),IFATM(*),IFATMP(*),NODDIR(*)
+      INTEGER  NSFNUM(*),NSFNOD(NSFMAX,*)
+      INTEGER  SFEX(*),SFEXIT(*),SFEXP(*),SFFLAG(*),NUDTET(*)
+      LOGICAL  SURF,PONDING,DTGMIN,LSFAIL,ERRGMX,NORMCV,ITAGEN,SFCHEK
+      LOGICAL  KSFZER,NOBACK,BCKSTP
+      REAL     CPUV9,CPUNL1
+      REAL     CPUVEC(*),CPUNL
+      REAL*8   PIKMAX,PINF,PL2,FINF,FL2
+      REAL*8   TIME,TIMEP
+      REAL*8   DELTAT,DTMIN,DTREDM,DTREDS,TETAF,OMEGA,OMEGAP
+      REAL*8   RMAX,RMIN,TOLUNS,TOLSWI,TOLCG,ERNLMX
+      REAL*8   PONDH_MIN,NUDG
+      REAL*8   PONDNOD(NNOD),OVFLNOD(NNOD)
+      REAL*8   PERMX(MAXSTR,*),PERMY(MAXSTR,*),PERMZ(MAXSTR,*)
+      REAL*8   SNODI(*),PNODI(*),PRESC(*),PTIM(*),PINP(3,*)
+      REAL*8   PORE(*),INDE(*),DEF(*),INDE0(*)
+      REAL*8   Q(*),QTIM(*),QINP(3,*)
+      REAL*8   ATMTIM(*),ATMINP(3,*)
+      REAL*8   AI(4,*),BI(4,*),CI(4,*),DI(4,*),LMASS(4,4)
+      REAL*8   ARENOD(*),VOLNOD(*),VOLU(*),VOLUR(*)
+      REAL*8   ETAI(*),ETAE(*),DETAI(*),DETAIE(*),SW(*),SWE(*)
+      REAL*8   CKRW(*),CKRWE(*),DCKRW(*),DCKRWE(*),SENODI(*),SEELT(*)
+      REAL*8   POLD(*),PDIFF(*),PTOLD(*),PNEW(*),PTNEW(*),PTIMEP(*)
+      REAL*8   TNOTI(*),XT5(*),LHSP(*)
+      REAL*8   COEF1(*),COEF2(*),COEF3(*),SCR(*),RNSYM(*)
+      REAL*8   ATMACT(*),ATMPOT(*),ATMOLD(*),LHSATM(*),LHSSF(NSFMAX,*)
+      REAL*8   QPNEW(*),QPOLD(*),SFQ(NSFMAX,*),SFQP(NSFMAX,*)
+      REAL*8   X(*),Y(*),Z(*)
+      REAL*8   NUDTIM(*),NUDRXY(*),NUDRZ(*)
+      REAL*8   NUDX(*),NUDY(*),NUDZ(*),NUDCUM(*)
+      REAL*8   NUDEPS(*),NUDDIF(*),NUDSMC(*),NUDNOD(*)
+      REAL*8   NUDVAL(MAXNUDC,*),NUDTAU(MAXNUDT,*)
+
+C     PLANT variables -----------------------
+      INTEGER  PLNODES(PLMAX,PLNODMAX),PLNNOD(PLMAX)
+      INTEGER  HOUR,NSTEP,NHOUR,NMETEODATA      
+      REAL*8   METEO(*),SUM1(PLMAX),SUM2(PLMAX)
+      REAL*8   KRS(PLMAX,PLNODMAX),KS(*),SUMRDF(PLMAX)
+      REAL*8   QPLANT(NMAX),QTOT(PLMAX),QTOT_HR(PLMAX)
+      REAL*8   LASTOMA(PLMAX),PSIR(PLMAX),GXYLEM(PLMAX)
+      REAL*8   GSTOMA(PLMAX,DATALEAFMAX),CCI(PLMAX,DATALEAFMAX)
+      REAL*8   FC(PLMAX),FC2(PLMAX),A1(DATALEAFMAX),A2(DATALEAFMAX)
+      REAL*8   E1(PLMAX),E2(PLMAX),NRFUN(PLMAX),DNRFUN(PLMAX)
+      REAL*8   PSILEAF(PLMAX),TRASP(PLMAX),VXYLEM(PLMAX),KXYLEM(PLMAX)
+      REAL*8   TIMING(NPMEDMAX),PSIMEAN_H(PLMAX,NPMEDMAX)
+      REAL*8   CUMSUMFC(PLMAX),GROWFACTOR(PLMAX)
+      REAL*8   TIME_HOUR,PSI_HOUR(PLMAX),DTOT,PSILMEAN(PLMAX)
+      LOGICAL  PLANT_FLAG,GROWTH_FLAG,SALT_FLAG
+      REAL*8   TMPTIME(NGROWDAYMAX),AVTMP(NGROWDAYMAX),DAVTMP
+      REAL*8   SALT3D(NMAX),trasp_somma,RLAI
+      REAL*8   RDFstamp(NMAX),ROOTGROWTH,SALT_FACTOR(PLMAX)
+      REAL*8   HR_DAY,HRTIME,QTOT_TRASP(PLMAX)
+
+
+      REAL*8   ZABL,ZLCLOLD,ZABLOLD,TSNEW,TAIR,WAIR
+      LOGICAL  ABL_FLAG
+C     ---------------------------------------
+
+      INCLUDE 'NORMVL.H'
+      INCLUDE 'MB_HGRAPH.H'
+      INCLUDE 'IOUNITS.H'
+      INCLUDE 'PLANT.H'
+
+c****************************************************************************
+c     PLANT
+c****************************************************************************
+
+
+
+
+
+C     PLANT: print output plant_leaf --------
+C     Sistemare...
+      IF (PLANT_FLAG) THEN    
+C----------------------Per ca bianca
+C      trasp_somma=0
+C            do i =1,nplant
+C               trasp_somma =trasp_somma+trasp(i)
+C            enddo
+c            write(2121,*) time,trasp_somma 
+C             WRITE(IOUT70,*)TIME, TRASP(514),TRASP(507),TRASP(207)
+C   ---------------------------------------------------------------
+          IF(NPLANT.GT.10) THEN
+c griglia senza fossi
+c                  WRITE(IOUT70,*)TIME,TRASP(311),TRASP(91),TRASP(127),
+c     1                        FC(311),FC(91),FC(127),
+c     2                        PSILEAF(311),PSILEAF(91),PSILEAF(127),
+c     3                        ARENOD(311),ARENOD(91),ARENOD(127)
+c griglia con fossi
+c               WRITE(IOUT70,*)TIME,TRASP(635),TRASP(503),TRASP(667),
+c     1                        FC(635),FC(503),FC(667),
+c     2                        PSILEAF(635),PSILEAF(503),PSILEAF(667),
+c     3                        ARENOD(635),ARENOD(503),ARENOD(667)
+               WRITE(IOUT70,*)TIME,(TRASP(I),PSILEAF(I),I=1,5)
+
+          ELSE
+               WRITE(IOUT70,*)TIME,(TRASP(I),QTOT(I),QTOT_HR(I),
+     1                        QTOT_TRASP(I),PSILEAF(I),PSIR(I),
+     2                        PSILMEAN(I),
+     3                        GSTOMA(I,15),FC(I),LASTOMA(I),I=1,NPLANT) 
+          ENDIF
+   
+      ENDIF
+C     ---------------------------------------
+
+C     PLANT: calcola valore medio di PSILEAF da usare 
+C     nel calcolo di lmbda (lastoma)
+
+      IF (PLANT_FLAG) THEN
+         DO I=1,NPLANT
+            PSI_HOUR(I)  = PSI_HOUR(I)+PSILEAF(I)*DELTAT
+         ENDDO
+         TIME_HOUR = TIME_HOUR+DELTAT
+         IF(TIME.LT.PSTEP) THEN
+            DO I=1,NPLANT
+               PSILMEAN(I) = PSI_HOUR(I)/TIME_HOUR
+            ENDDO
+         ELSE
+            DO I=1,NPLANT
+               PSILMEAN(I) = 0
+            ENDDO
+            IF (TIME_HOUR.GT.PSTEP) THEN
+               HOUR  = HOUR+1
+               NHOUR = HOUR
+                  IF (HOUR.EQ.NPMED+1) THEN
+                     HOUR  = 1
+                     NHOUR = NPMED
+                  ENDIF
+               TIMING(HOUR)    = TIME_HOUR
+                  DO I=1,NPLANT
+                     PSIMEAN_H(I,HOUR) = PSI_HOUR(I)
+                     PSI_HOUR(I)  = 0
+                  ENDDO
+               TIME_HOUR = 0
+            ENDIF
+            DTOT = 0
+            DO J = 1,NHOUR
+               DO I=1,NPLANT
+                  PSILMEAN(I) = PSILMEAN(I)+PSIMEAN_H(I,J)
+               ENDDO
+               DTOT     = DTOT+TIMING(J)
+            ENDDO
+            DO I=1,NPLANT
+               PSILMEAN(I) = PSILMEAN(I)/DTOT
+c               PSILMEAN(I)=PSILEAF(I)
+            ENDDO
+         ENDIF
+      ENDIF
+
+C ***********************************
+
+      IF(HRTIME.LT.86400) THEN
+C         write(5544,*) TIME,0
+         HRTIME = HRTIME + DELTAT
+         HR_DAY = HR_DAY + QTOT_HR(1)*DELTAT
+      ELSE
+C         WRITE(5544,*)TIME,HR_DAY
+         HRTIME = DELTAT
+         HR_DAY = 0
+      ENDIF
+       
+
+C ***********************************
+
+
+
+
+C     ---------------------------------------
+
+      IF (GROWTH_FLAG) THEN
+
+C           Calculate Daily Average Temperature DAVTMP     
+            DO I=1,NGROWDAY
+               IF((TIME.GT.(GROWIN+LDAY*(I-1))).AND.
+     1         (TIME.LT.(GROWIN+LDAY*(I)))) THEN
+               AVTMP(I) = AVTMP(I)+METEO(1)*DELTAT
+               TMPTIME(I) = TMPTIME(I)+DELTAT
+               ENDIF
+            ENDDO
+
+            DO I=1,NGROWDAY
+               IF((TIME.GT.(GROWIN+LDAY*(I))).AND.
+     1         (TIME.LT.(GROWIN+LDAY*(I+1)))) THEN
+               DAVTMP = AVTMP(I)/TMPTIME(I)
+               ENDIF
+            ENDDO
+
+
+
+C           Calculate the growing factor according to Van den Hoof et al.,2010        
+C           Calculate plant growth
+C           CROP DEVELOPMENT
+            IF((TIME.GT.GROWIN).AND.(TIME.LT.GROWIN+NGROWDAY*LDAY))THEN
+                   CALL PLANT_DVS(TIME,DELTAT,DAVTMP,ROOTGROWTH) 
+                   CALL PLANT_GROWTH(TIME,DELTAT,DAVTMP,FC2,RLAI)
+            ENDIF
+            DO I=1,NPLANT
+               IF (RLAI.GE.0) THEN
+                  GROWFACTOR(I) = SQRT(LAI2(I)/LAI(ITYPEP(I)))+1e-20
+               ENDIF
+            ENDDO
+c            WRITE(1950,*) TIME,(RLAI,LAI2(I),GROWFACTOR(I),I=1,NPLANT)
+
+      ENDIF
+
+c****************************************************************************
+c  Se c'e'crescita ricalcola nodi afferenti alle piante
+
+      IF ((PLANT_FLAG).AND.(GROWTH_FLAG)) THEN
+         IF((TIME.GT.GROWIN).AND.(TIME.LT.GROWIN+NGROWDAY*LDAY))THEN
+           CALL PLANT_ROOT(N,X,Y,Z,RDFstamp,VOLNOD,PLNODES,
+     1                    PLNNOD,SUMRDF,ROOTGROWTH,GROWTH_FLAG)
+         ENDIF
+      ENDIF
+
+C  ABLMODEL *********************
+
+      IF (ABL_FLAG) THEN
+        CALL ABLMODEL(TRASP,METEO,ZABL,DELTAT,TIME,ATMPOT,ZLCLOLD,
+     1                ZABLOLD,ATMINP,TSNEW,TAIR,WAIR)
+      ENDIF
+
+C  ******************************
+
+C           
+C----------------------------------------------START NONLINEAR ITERATION
+C           
+      CALL TIM(CPUNL1,1)
+      WRITE(IOUT2,1050)
+      WRITE(ITERM,1020)
+  200 CONTINUE
+
+c PLANT: Calculate conductances and transpiration term -----------------
+      IF ((PLANT_FLAG).AND.(GROWTH_FLAG)) THEN
+         IF((TIME.GT.GROWIN).AND.(TIME.LT.GROWIN+NGROWDAY*LDAY))THEN
+c           WRITE(IOUT71,*) 'Newton Raphson iterations'
+c           WRITE(IOUT71,*) 'TIME =',TIME
+c           CALL PLANT_ROOT(N,X,Y,Z,RDFstamp,VOLNOD,PLNODES,
+c     1                    PLNNOD,SUMRDF,ROOTGROWTH,GROWTH_FLAG)
+           CALL PLANT_COND(N,NT,TP,TETRA,KS,CKRW,VOLNOD,SUMRDF,
+     1                   PLNNOD,PLNODES,PNEW,KRS,X,Y,Z,SUM1,
+     2                   SUM2,SW,PNODI,IVGHU,SALT_FLAG,SALT3D,
+     3                   ROOTGROWTH,GROWTH_FLAG,QPLANT,PSIR,TIME)
+           CALL PLANT_LEAF(N,METEO,SUM1,SUM2,KRS,PNEW,VOLNOD,
+     1                  PLNNOD,PLNODES,DELTAT,PSILEAF,LASTOMA,GSTOMA,
+     2                  CCI,FC2,E1,E2,NRFUN,DNRFUN,GXYLEM,PSIR,VXYLEM,
+     3                  KXYLEM,A1,A2,TIME,PSILMEAN,CUMSUMFC,PLANT_FLAG,
+     4                  GROWTH_FLAG,GROWFACTOR,SALT_FLAG,SALT_FACTOR,
+     5                  ROOTGROWTH,ABL_FLAG,TSNEW,NMETEODATA,ARENOD)
+           CALL PLANT_TRASP(N,PLNNOD,PLNODES,KRS,PSIR,PNEW,VOLNOD,
+     1                   VXYLEM,PSILEAF,KXYLEM,QPLANT,QTOT,TRASP,
+     2                   SUM1,SUM2,Z,GROWFACTOR,GROWTH_FLAG,QTOT_HR,
+     3                   QTOT_TRASP) 
+         ENDIF
+       ELSEIF((PLANT_FLAG).AND.(.NOT.(GROWTH_FLAG))) THEN
+c           WRITE(IOUT71,*) 'Newton Raphson iterations'
+c           WRITE(IOUT71,*) 'TIME =',TIME
+           CALL PLANT_COND(N,NT,TP,TETRA,KS,CKRW,VOLNOD,SUMRDF,
+     1                   PLNNOD,PLNODES,PNEW,KRS,X,Y,Z,SUM1,
+     2                   SUM2,SW,PNODI,IVGHU,SALT_FLAG,SALT3D,
+     3                   ROOTGROWTH,GROWTH_FLAG,QPLANT,PSIR,TIME)
+           CALL PLANT_LEAF(N,METEO,SUM1,SUM2,KRS,PNEW,VOLNOD,
+     1                  PLNNOD,PLNODES,DELTAT,PSILEAF,LASTOMA,GSTOMA,
+     2                  CCI,FC2,E1,E2,NRFUN,DNRFUN,GXYLEM,PSIR,VXYLEM,
+     3                  KXYLEM,A1,A2,TIME,PSILMEAN,CUMSUMFC,PLANT_FLAG,
+     4                  GROWTH_FLAG,GROWFACTOR,SALT_FLAG,SALT_FACTOR,
+     5                  ROOTGROWTH,ABL_FLAG,TSNEW,NMETEODATA,ARENOD)
+           CALL PLANT_TRASP(N,PLNNOD,PLNODES,KRS,PSIR,PNEW,VOLNOD,
+     1                   VXYLEM,PSILEAF,KXYLEM,QPLANT,QTOT,TRASP,
+     2                   SUM1,SUM2,Z,GROWFACTOR,GROWTH_FLAG,QTOT_HR,
+     3                   QTOT_TRASP)
+      ENDIF
+C ----------------------------------------------------------------------
+
+      IF (IOPT .EQ. 1) THEN
+         CALL PICARD(CPUVEC,N,NT,NTRI,NTERM,NP,NQ,NITER,NITERT,ITLIN,
+     1               ITMXCG,TOLCG,TIME,DELTAT,TETAF,IPEAT,IVGHU,
+     2               NLKP,NUDN,NUDC,NUDCTR,NUDG,NUDFLAG,WFLAG,
+     3               KSLOPE,TP,TETRA,TETJA,JA,TOPOL,
+     4               PERMX,PERMY,PERMZ,SNODI,PNODI,CONTP,CONTQ,
+     5               PORE,INDE,PRESC,Q,AI,BI,CI,DI,LMASS,X,Y,Z,
+     6               INDE0,VOLNOD,VOLU,VOLUR,IVOL,RMAX,RMIN,
+     7               ETAI,ETAE,SW,SWE,CKRW,CKRWE,SENODI,SEELT,
+     8               POLD,PDIFF,PTOLD,PNEW,DEF,
+     9               PTNEW,PTIMEP,TNOTI,XT5,LHSP,COEF1,COEF2,
+     A               SCR,NNOD,IFATM,ATMACT,ATMOLD,LHSATM,NUMDIR,
+     B               NODDIR,NSF,NSFNUM,NSFNOD,SFEX,LHSSF,DUPUIT,
+     C               LSFAIL,KLSFAI,
+     D               NUDTET,NUDTIM,NUDRXY,NUDRZ,NUDX,NUDY,NUDZ,
+     E               NUDEPS,NUDDIF,NUDSMC,NUDNOD,NUDVAL,NUDTAU,
+     F               PLANT_FLAG,QPLANT)
+      ELSE  
+         CALL NEWTON(CPUVEC,N,NT,NTRI,NTERM,NP,NQ,NITER,NITERT,ITLIN,
+     1               ISOLV,ITMXCG,TOLCG,TIME,DELTAT,TETAF,IVGHU,
+     2               NLKP,KSLOPE,TP,TETRA,TETJA,IA,JA,TOPOL,
+     3               PERMX,PERMY,PERMZ,Z,
+     4               SNODI,PNODI,CONTP,CONTQ,PRESC,Q,BI,CI,DI,
+     5               LMASS,VOLU,VOLUR,IVOL,RMAX,RMIN,ETAI,ETAE,
+     6               DETAI,DETAIE,SW,SWE,CKRW,CKRWE,DCKRW,DCKRWE,
+     7               POLD,PDIFF,PTOLD,PNEW,PTNEW,PTIMEP,
+     8               TNOTI,XT5,LHSP,COEF1,COEF2,COEF3,SCR,
+     9               IBOT,MINBOT,INSYM,RNSYM,NNOD,IFATM,
+     A               ATMACT,ATMOLD,LHSATM,NUMDIR,NODDIR,NSF,
+     B               NSFNUM,NSFNOD,SFEX,LHSSF,LSFAIL,KLSFAI,DUPUIT)
+      END IF
+C     WRITE(5000,*)ITER,INDE(13)
+C
+C  before checking for convergence of the nonlinear scheme, we:
+C  (i)   back-calculate fluxes at Dirichlet nodes
+C  (ii)  compute (but don't output) mass balance errors
+C  (iii) apply nonlinear relaxation (if required)
+C  (iv)  calculate the nonlinear convergence and residual error norms
+C  (v)   check for switching of atmospheric boundary conditions
+C        (depending on the setting of TOLSWI)
+C  (vi)  calculate new position of the exit point along each seepage
+C        face and check for seepage face exit point convergence
+C  Steps (i) and (ii) are done first because pressure head and boundary
+C  flux values may be modified in steps (iii), (v), and (vi),
+C  and we want to use the unmodified values in the mass balance
+C  calculations (since these are the values obtained after solving
+C  the system of equations). We consider the modified values however to
+C  be the solution for the current iteration or time level, in the sense
+C  that these are the values which are saved (in POLD, PTOLD, PTIMEP,
+C  ATMOLD, SFQP, etc) before we pass on to the next iteration or
+C  time level.
+C  Mass balance errors are only output at the end of the nonlinear
+C  iterative procedure.
+C  It is necessary to perform step (vi) before checking for convergence
+C  of the nonlinear scheme since in the case SFCHEK=TRUE the
+C  seepage face exits points must also converge for the nonlinear
+C  iterations to converge.
+C
+      CALL TIM(CPUV9,1)
+      CALL MASBAL(IOPT,N,NP,NQ,NNOD,NSF,IPEAT,IVGHU,NUDC,
+     1            NLKP,NT,NTRI,TETAF,TIME,DELTAT,
+     2            TETRA,TP,TOPOL,JA,CONTP,IFATM,
+     3            SFEX,SFFLAG,NSFNUM,NSFNOD,
+     4            PNEW,PTIMEP,PDIFF,SNODI,PNODI,PORE,INDE,
+     5            SENODI,ETAI,SEELT,ETAE,Z,VOLNOD,QPNEW,QPOLD,Q,
+     6            ATMACT,ATMOLD,COEF1,XT5,SCR,
+     7            SFQ,SFQP,NUDNOD,NUDCUM)
+C  
+C  apply nonlinear relaxation (if required)
+C        
+      IF (NLRELX .NE. 0) THEN
+         IF (NLRELX .EQ. 1) THEN
+            CALL RELAX(N,OMEGA,PNEW,POLD)
+         ELSE
+            CALL RELXOM(N,ITER,OMEGA,OMEGAP,PIKMXV,PNEW,POLD)
+            CALL RELAX(N,OMEGA,PNEW,POLD)
+         END IF   
+      END IF      
+C
+C  check nonlinear convergence and switching of atmospheric
+C  and seepage face boundary conditions
+C
+      CALL CONVER(ITER,N,NNOD,NSF,KSFCV,KSFCVT,NITER,ISFONE,
+     1            L2NORM,IKMAX,KSF,NSFNUM,NSFNOD,SFEX,SFEXIT,
+     2            SFFLAG,IFATM,SURF,PONDING,KSFZER,TOLSWI,
+     3            TIME,DELTAT,PIKMAX,PINF,PL2,FINF,FL2,PONDH_MIN,
+     4            PNEW,POLD,TNOTI,ATMACT,ATMPOT,SFQ,
+     5            ARENOD,PONDNOD,OVFLNOD,DUPUIT,Z)
+      CALL TIM(CPUV9,2)
+      CPUVEC(9)=CPUVEC(9)+CPUV9
+C     
+C------------------------------CHECK FOR CONVERGENCE OF NONLINEAR SCHEME
+C     
+C  case   (i) LSFAIL = FALSE and ERRGMX = FALSE and NORMCV = FALSE and
+C             ITAGEN = TRUE
+C             Iterate again: update pressure heads for next iteration.
+C  case  (ii) LSFAIL = FALSE and ERRGMX = FALSE and NORMCV = TRUE
+C             Convergence achieved: output mass balance errors;
+C             input (if necessary), interpolate, and check for switching
+C             of atmospheric boundary conditions; update pressure
+C             heads for next time level.
+C  case (iii) (LSFAIL = TRUE or ERRGMX = TRUE or (NORMCV = FALSE and
+C             ITAGEN = FALSE)) and DTGMIN = TRUE
+C             Convergence failed - back-step:
+C             (see BKSTEP routine - reset values to previous
+C             time level; reduce time step size; interpolate
+C             non-atmospheric, non-seepage face Dirichlet and Neumann
+C             boundary conditions; interpolate and check
+C             for switching of atmospheric boundary conditions; re-start
+C             the time step using smaller time step size).
+C  case  (iv) (LSFAIL = TRUE or ERRGMX = TRUE or (NORMCV = FALSE and
+C             ITAGEN = FALSE)) and DTGMIN = FALSE
+C             Convergence failed - no back-stepping possible: output
+C             mass balance errors; calculate hydrograph fluxes;
+C             end the simulation.
+C  Note: in the case SFCHEK=TRUE an additional condition for convergence
+C  is that the seepage face exit points converged (i.e. KSFZER=TRUE).
+C        
+      BCKSTP=.FALSE.
+      IF (ITER .LT. ITUNS) THEN
+         ITAGEN=.TRUE.
+      ELSE  
+         ITAGEN=.FALSE.
+      END IF      
+      IF (PL2 .GE. ERNLMX  .OR.  PINF .GE. ERNLMX  .OR.
+     1    FL2 .GE. ERNLMX  .OR.  FINF .GE. ERNLMX) THEN
+         ERRGMX=.TRUE.
+      ELSE 
+         ERRGMX=.FALSE.
+      END IF
+      IF (L2NORM .EQ. 0) THEN
+         IF (PINF .LE. TOLUNS) THEN
+            NORMCV=.TRUE.
+         ELSE 
+            NORMCV=.FALSE.
+         END IF
+      ELSE    
+         IF (PL2 .LE. TOLUNS) THEN
+            NORMCV=.TRUE.
+         ELSE 
+            NORMCV=.FALSE.
+         END IF
+      END IF  
+      IF (     ( (.NOT. LSFAIL) .AND. (.NOT. ERRGMX) .AND.
+     1           (.NOT. NORMCV) .AND. ITAGEN )
+     2    .OR. ( (.NOT. LSFAIL) .AND. (.NOT. ERRGMX) .AND.
+     3           ITAGEN .AND. SFCHEK .AND. (.NOT. KSFZER) ) ) THEN  
+C        
+C  case (i): iterate again
+C             
+         CALL VCOPYI(NSF,SFEXIT,SFEX) 
+         CALL VCOPYR(N,POLD,PNEW)
+         CALL VCOPYR(N,PTOLD,PTNEW)
+         CALL WEIGHT(N,TETAF,PNEW,PTIMEP,PTNEW)
+         ITER=ITER+1
+         GO TO 200
+      END IF
+C        
+C  cases (ii), (iii), (iv): exit iteration loop
+C        
+      ITRTOT=ITRTOT+ITER
+      CALL TIM(CPUNL1,2)
+      CPUNL=CPUNL+CPUNL1
+      WRITE(IOUT2,1020)
+      DO II=1,ITER
+         WRITE(IOUT2,1030) II,PL2V(II),PIKMXV(II),ITUMAX(II),PCURRV(II),
+     1                     PPREVV(II),FL2V(II),FINFV(II)
+      END DO
+      IF (     ( (.NOT. SFCHEK) .AND. (.NOT. LSFAIL) .AND.
+     1           (.NOT. ERRGMX) .AND. NORMCV )
+     2    .OR. (       SFCHEK .AND. (.NOT. LSFAIL) .AND.
+     3           (.NOT. ERRGMX) .AND. NORMCV .AND. KSFZER ) ) THEN
+C        
+C  case (ii): convergence achieved
+C        
+         NOBACK=.FALSE.  
+         WRITE(IOUT2,1090) ITER
+         WRITE(ITERM,1090) ITER
+      ELSE
+         WRITE(IOUT2,1040) ITER
+         WRITE(ITERM,1040) ITER
+         IF (DTGMIN) THEN
+C    
+C  case (iii): convergence failed - back-step
+C  
+            WRITE(IOUT2,1095)
+            BCKSTP=.TRUE.
+            NOBACK=.FALSE.  
+         ELSE                
+C    
+C  case (iv): convergence failed - no back-stepping possible
+C
+            NOBACK=.TRUE.    
+            WRITE(IOUT2,1100)
+         END IF
+      END IF
+C
+      RETURN
+ 1020 FORMAT(/,'                     NONLINEAR CONVERGENCE BEHAVIOR ',
+     1       /,' iter- convergence error norms  node    PNEW at',
+     2         '    POLD at  residual error norms',
+     3       /,' ation         PL2      PIKMAX IKMAX      IKMAX',
+     4         '      IKMAX        FL2       FINF')
+ 1030 FORMAT(I6,2(1PE12.4),I6,2(1PE11.2),2(1PE11.3)) 
+ 1040 FORMAT(1X,'CONVERGENCE NOT ACHIEVED IN ',I4,' ITERATIONS')
+ 1050 FORMAT(/,'      LINEAR SOLVER CONVERGENCE BEHAVIOR',
+     1       /,' iter       residual  real residual')
+ 1090 FORMAT(1X,'CONVERGENCE ACHIEVED IN ',I4,' ITERATIONS')  
+ 1095 FORMAT(1X,'>>> BACK-STEPPING...')
+ 1100 FORMAT(1X,'>>> NO BACK-STEPPING POSSIBLE -- SIMULATION WILL ',
+     1          'TERMINATE')
+      END

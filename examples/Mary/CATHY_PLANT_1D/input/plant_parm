@@ -1,0 +1,54 @@
+1    1                     NPLANT, NPTYPE
+0			   ACANOFLAG (=1 if ACANO = ARENOD)
+0                          PLANT_PRINT (1:Print 2d (ONLY IF several plants, e.g. nplant=nnod) - ELSE: Only 3d)
+5                          NMETEODATA (4: if LAI constant, 5: LAI(t), 12 if ABL)
+ 0.1E+07                   RHOW [g/L^3] [g/m^3]
+210   400   380            COATM [mmol/mol],CCO2STAR [ppm],CCO2ATM [ppm]
+0.7   1.6                  SSTOMA [-],ASTOMA [-]
+0.1E-05    30    -20.0     TOLLNR,ITMAXNR,PSILEAF0
+24 3600  3600  24                   PSTEP,NPMED
+
+5		1
+
+2.5           1             XMAXP        [L]
+2.5           1             YMAXP        [L]
+1.00          0.50          ZMAXP        [L]
+1.00          1.00          VRUX         [-]
+1.00          1.00          VRUY         [-]
+1.00          1.00          VRUZ         [-]
+0.00          0.00          VRUX1        [L]
+0.00          0.00          VRUY1        [L]
+0.20          0.20          VRUZ1        [L]
+4.00          3.00          LAI          [-]
+5e-6          11.7e-7       GXYLEM_MAX   [1/t]                [1/sec]
+2.00          2.00          C_GXYLEM     [-]
+200.0         200.0         D_GXYLEM     [L]                  [m]
+41           81.30         VCMAX25      [mumol/(L^2 t^1)]    [mumol m^{-2} s^{-1}]
+300.00        300.00        KC25         [mumol/mol]
+300.00        300.00        KO25         [mmol/mol]
+2.60          2.60          COMP25       [mmol/mumol]
+1755.00       5970.00       LA_MAX       [mumol/mol]
+1.2e-05         1.16E-04      LA_BETA      [1/L^2]              [1/m^{2}]
+-277.00       -132.00       LA_PSILMAX   [L]                  [m]
+-500.00       -200.00       PSILMAX      [L]                  [m]
+0.015         0.064         LIMIT        [-]
+17            0.6           HCANO        [L]                  [m]
+30            30            DATA_LEAF    [-]
+9             1             ACANO        [L^2]                [m^2]
+0.06          0.1           AXYLEM       [L^2]                [m^2]
+3E-11         1E-04         GROOT_STAR   [1/t]                [1/s]
+1E-04         1E-04         GSOIL_STAR   [L/t]                [m/s]
+0.5           0.5           SALT_TOX                
+
+
+ 8			    NDATA_RDF
+ 0.0	      6.00e4	    ZRDF(NDATA_RDF)  RDFVAL (value of RDF at z = ZRDF)
+-0.1          2.36e4
+-0.2          9.26e3
+-0.3	      3.64e3
+-0.4	      1.43e3
+-0.5	      5.62e2
+-0.6	      2.21e2
+-0.7	      8.68e1
+
+
