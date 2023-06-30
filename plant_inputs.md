@@ -14,11 +14,11 @@ Each row corresponds to a plant, with the first number indicating the node and t
 Additional parameters include:
 
 - `XMAXP`, `YMAXP`, and `ZMAXP`: Semi-lengths describing the root extension along the x, y, and z axes, respectively.
-- `VRUX`, VRUY, VRUZ, VRUX1, VRUY1, and VRUZ1: Unused parameters.
+- `VRUX`, `VRUY`, `VRUZ`, `VRUX1`, `VRUY1`, and `VRUZ1`: Unused parameters.
 - `LAI`: Constant value of leaf area index.
-- `GXYLEM_MAX`, C_GXYLEM, and D_GXYLEM: Maximum xylem conductance and coefficients for vulnerability curve.
-- `VCMAX`, KC25, KO25, and COMP25: Parameters related to carbon fixation and compensation point.
-- `LA_MAX`, LA_BETA, and LA_PSILMAX: Parameters for maximum marginal water use efficiency.
+- `GXYLEM_MAX`, `C_GXYLEM`, and `D_GXYLEM`: Maximum xylem conductance and coefficients for vulnerability curve.
+- `VCMAX`, `KC25`, `KO25`, and `COMP25`: Parameters related to carbon fixation and compensation point.
+- `LA_MAX`, `LA_BETA`, and `LA_PSILMAX`: Parameters for maximum marginal water use efficiency.
 - `PSILMAX`: Threshold value to determine if the plant is functioning properly based on leaf water potential.
 - `LIMIT`: Apparent quantum yield.
 - `HCANO`: Canopy height.
