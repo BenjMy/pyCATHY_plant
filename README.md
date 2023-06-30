@@ -1,4 +1,4 @@
-# pyCATHY plant model DA 🌱💧
+# pyCATHY plant model & DA 🌱💧
 
 This documentation provides an overview of the project code and presents the encouraging results obtained through the implementation of Data Assimilation (DA) techniques to enhance the performance of the CATHY hydrological model solver and invert model parameters.
 
