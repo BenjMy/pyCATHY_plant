@@ -19,16 +19,16 @@ We are considering the incorporation of plant data observations such as **leaf w
 
 ### The CATHY plant model
 
-While CATHY V1 uses the Feddes 1D RWU sink term approach, **CATHY plant model** uses a modeling framework that combines a 1D description of stem water flow, leaf-level photosynthesis, and transpiration with a **3D representation of soil-root water exchanges**.
-- [plant inputs parameters](plant_inputs)
-- [plant outputs files](plant_outputs)
+- While CATHY V1 uses the Feddes 1D RWU sink term approach, **CATHY plant model** uses a modeling framework that combines a 1D description of stem water flow, leaf-level photosynthesis, and transpiration with a **3D representation of soil-root water exchanges**.
+  - [plant inputs parameters](plant_inputs)
+  - [plant outputs files](plant_outputs)
 
-Source files are different from the [CATHY V1](https://bitbucket.org/cathy1_0/cathy/src/master/). 
-- [source files](/src/)
+- Source files are different from the [CATHY V1](https://bitbucket.org/cathy1_0/cathy/src/master/). 
+  - [source files](/src/)
 
-
-- Work from Laura Busato - see [Busato](/examples/Busato/)
-- Work from Gabriele - see [Manoli](/examples/1_Gabriele_Piante_NON_modificato/)
+- Examples from literrature
+  - Work from Laura Busato - see [Busato](/examples/Busato/)
+  - Work from Gabriele - see [Manoli](/examples/1_Gabriele_Piante_NON_modificato/)
 
 ### DA Procedure within CATHY plant model
 
