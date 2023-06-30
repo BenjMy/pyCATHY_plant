@@ -18,18 +18,22 @@ We are considering the incorporation of plant data observations such as **leaf w
 
 ### The CATHY plant model
 
-Source files are different from the [CATHY V1](https://bitbucket.org/cathy1_0/cathy/src/master/). 
+CATHY V1: Feddes 1D RWU sink term
 
-- Work from Laura Busato - see Busato
-- Work from Gabriele - see Manoli
+CATHY plant model: modeling framework that combines a 1D description of stem water flow, leaf-level photosynthesis, and transpiration with a **3D representation of soil-root water exchanges**.
+
+
+Source files are different from the [CATHY V1](https://bitbucket.org/cathy1_0/cathy/src/master/). 
+- Work from Laura Busato - see [Busato](/examples/Busato/)
+- Work from Gabriele - see [Manoli](/examples/1_Gabriele_Piante_NON_modificato/)
 
 ### DA Procedure within CATHY plant model
 
-Please refer to the accompanying resources for detailed instructions on running the code and implementing data assimilation using pyCATHY.
+Please refer to the the [online doc](https://benjmy.github.io/pycathy_wrapper/) for detailed instructions on running the code and implementing data assimilation using pyCATHY.
 
 The procedure to prepare is logistically the same with a few changes:
-- Input preparation
-- Mapping operator
+- Input preparation 
+- Mapping operator (to write)
 
 ### Bugs
 

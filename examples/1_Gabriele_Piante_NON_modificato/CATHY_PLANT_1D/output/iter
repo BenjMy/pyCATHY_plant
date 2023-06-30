@@ -1,0 +1,11 @@
+     IOPT   (1 PICARD, 2 NEWTON)             =      1
+     NLRELX (0 NORELX,1 CONS RELX,2 VAR RELX)=      1
+     KSLOPE (0 ANA, 1 KSL/ANA, 2 KSL/C-DIFF,
+             3 LOC KSL/ANA, 4 LOC TAN-SLOPE) =      0
+     TOLUNS (TOLERANCE FOR NONLINEAR ITER)   =     5.00000E-03
+     TOLSWI (TOLERANCE FOR BC SWITCHING)     =     1.00000E+30
+     L2NORM (0 INFINITY NORM, ELSE L2 NORM)  =      0
+
+ nlinr  linr converg error norms  node   PNEW at   POLD at   resid error norms
+  iter  iter       PL2      PINF IKMAX     IKMAX     IKMAX       FL2      FINF
+ =============================================================================

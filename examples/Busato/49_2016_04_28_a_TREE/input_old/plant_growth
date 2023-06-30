@@ -1,0 +1,37 @@
+0            GFLAG (0=Growth not included, 1=Growth included)
+86400        LDAY     - 1 Day Lenght [s] 
+86400  3974400      GROWIN   - Growth start time  [s] SOWING=2678400 EMERGENCE=5270400
+135          NGROWDAY - # of days from seeding to harvesting [-]
+0         0      IDVS  [-]
+
+0.04836   0.012	ILAI  [m2 leaf/m2 ground]
+          0.5	WLVI  [g/m2]
+          0.3	WSTI  [g/m2]
+          0.8	WRTI  [g/m2]
+          0.0	WLVDI [g/m2]
+          0.0	WSOI  [g/m2]
+          0.0	IEAI  [m2 ear/m2 ground]
+          0.459	CFLV  [g C/g DM] C = carbon; DM = dry mass
+          0.494	CFST  [g C/g DM]
+          0.467	CFRT  [g C/g DM] 
+          0.471   CFSO  [g C/g DM]
+2.0       2.0	 Q10   [-]
+          25	 TREF  [degC]
+3.47E-7   3.5e-7  MAINLV [g CHO/g DM/s]
+1.736E-7  5.8e-7  MAINST [g CHO/g DM/s]
+1.736E-7  5.8e-7  MAINRT [g CHO/g DM/s]
+1.157E-7  1.2e-7  MAINSO [g CHO/g DM/s]
+          1.444   ASRQRT [g CHO/g DM]
+          1.463   ASRQLV [g CHO/g DM]
+          1.513   ASRQST [g CHO/g DM]
+1.49      1.415   ASRQSO [g CHO/g DM]
+          0.200   FRTRL  [-]
+          0.947   CONVL  [-]
+0.20      1.0     FRDR
+          4.0     LAICR  [m2 leaf/m2 ground]
+1e-7      3.4e-7    1.0e-7  RGRL [degC-1 s-1]
+0.0       0.022   SLA  [m2 leaf/g leaf]: read as TAB if SLA=0
+          0.6e-3  EAR  [m2 ear/g DM]
+10.0      0.0     TBASE [degC]
+
+Col 1:MAIZE - Col\ 2: WHEAT
