@@ -1,4 +1,4 @@
-# pyCATHY plant model DA
+# pyCATHY plant model DA 🌱💧
 
 This documentation provides an overview of the project code and presents the encouraging results obtained through the implementation of Data Assimilation (DA) techniques to enhance the performance of the CATHY hydrological model solver and invert model parameters.
 
@@ -12,7 +12,8 @@ DA using pyCATHY has shown promising results for:
   
 1 article based on the outcomes of this work (in prep.)
 
-## Expanding Assimilation Scope
+## Expanding Assimilation Scope 🪝
+
 We are considering the incorporation of plant data observations such as **leaf water potential** or **stem flow** as additional assimilation observations. This expansion has the potential to provide valuable insights and contribute to a more comprehensive understanding of the hydrological model.
 
 
@@ -35,7 +36,7 @@ The procedure to prepare is logistically the same with a few changes:
 - Input preparation 
 - Mapping operator (to write)
 
-### Bugs
+### Bugs 🐛
 
 - See [Compilation issue](https://github.com/BenjMy/pyCATHY_plant/issues/1#issue-1782683943)
 - See [Processor issue]()
