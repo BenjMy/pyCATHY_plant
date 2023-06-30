@@ -13,29 +13,29 @@ Each row corresponds to a plant, with the first number indicating the node and t
 
 Additional parameters include:
 
-- XMAXP, YMAXP, and ZMAXP: Semi-lengths describing the root extension along the x, y, and z axes, respectively.
-- VRUX, VRUY, VRUZ, VRUX1, VRUY1, and VRUZ1: Unused parameters.
-- LAI: Constant value of leaf area index.
-- GXYLEM_MAX, C_GXYLEM, and D_GXYLEM: Maximum xylem conductance and coefficients for vulnerability curve.
-- VCMAX, KC25, KO25, and COMP25: Parameters related to carbon fixation and compensation point.
-- LA_MAX, LA_BETA, and LA_PSILMAX: Parameters for maximum marginal water use efficiency.
-- PSILMAX: Threshold value to determine if the plant is functioning properly based on leaf water potential.
-- LIMIT: Apparent quantum yield.
-- HCANO: Canopy height.
-- DATA_LEAF, ACANO, AXYLEM, GROOT_STAR, and GSOIL_STAR: Parameters related to canopy, xylem area, and root conductance.
-- SALT_TOX: Unused parameter.
-- NDATA_RDF, ZRDF, and RDFVAL: Parameters for root density function.
+- `XMAXP`, `YMAXP`, and `ZMAXP`: Semi-lengths describing the root extension along the x, y, and z axes, respectively.
+- `VRUX`, VRUY, VRUZ, VRUX1, VRUY1, and VRUZ1: Unused parameters.
+- `LAI`: Constant value of leaf area index.
+- `GXYLEM_MAX`, C_GXYLEM, and D_GXYLEM: Maximum xylem conductance and coefficients for vulnerability curve.
+- `VCMAX`, KC25, KO25, and COMP25: Parameters related to carbon fixation and compensation point.
+- `LA_MAX`, LA_BETA, and LA_PSILMAX: Parameters for maximum marginal water use efficiency.
+- `PSILMAX`: Threshold value to determine if the plant is functioning properly based on leaf water potential.
+- `LIMIT`: Apparent quantum yield.
+- `HCANO`: Canopy height.
+- `DATA_LEAF`, `ACANO`, `AXYLEM`, `GROOT_STAR`, and `GSOIL_STAR`: Parameters related to canopy, xylem area, and root conductance.
+- `SALT_TOX`: Unused parameter.
+- `NDATA_RDF`, `ZRDF`, and `RDFVAL`: Parameters for root density function.
 
-For columns from XMAXP to SALT_TOX, there will be as many columns as plant types, where the first column represents type 1 plants, the second column represents type 2 plants, and so on.
+For columns from `XMAXP` to `SALT_TOX`, there will be as many columns as plant types, where the first column represents type 1 plants, the second column represents type 2 plants, and so on.
 
 The second input file `plant_meteo` allows you to specify meteorological data for the model. It is created using the out_meteo.exe executable, and the required input files are:
 
-- time.txt: Contains time steps at which meteorological parameters are available.
-- Temperatura.txt: Contains temperature values corresponding to the time steps in time.txt.
-- RH.txt: Contains relative humidity values corresponding to the time steps in time.txt.
-- PAR.txt: Contains photosynthetically active radiation values corresponding to the time steps in time.txt.
-- ZEN.txt: Contains zenith angle values corresponding to the time steps in time.txt.
-- LAI.txt: Contains leaf area index values corresponding to the time steps in time.txt (read if NMETEOPLANT=5 in plant_parm file).
+- `time.txt`: Contains time steps at which meteorological parameters are available.
+- `Temperatura.txt`: Contains temperature values corresponding to the time steps in time.txt.
+- `RH.txt`: Contains relative humidity values corresponding to the time steps in time.txt.
+- `PAR.txt`: Contains photosynthetically active radiation values corresponding to the time steps in time.txt.
+- `ZEN.txt`: Contains zenith angle values corresponding to the time steps in time.txt.
+- `LAI.tx`t: Contains leaf area index values corresponding to the time steps in time.txt (read if NMETEOPLANT=5 in plant_parm file).
 
 The `plant_growth` and `plant_salt` files are also used for some cases.
 
