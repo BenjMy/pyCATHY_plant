@@ -37,5 +37,5 @@ The procedure to prepare is logistically the same with a few changes:
 
 ### Bugs
 
-- See ?
-- See 
+- See [Compilation issue](https://github.com/BenjMy/pyCATHY_plant/issues/1#issue-1782683943)
+- See [Processor issue]()
