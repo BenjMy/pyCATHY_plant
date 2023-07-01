@@ -1,0 +1,8 @@
+Procedura di preprocessing per CATHY:
+
+1) Lanciare wbb con input files hap.in e dtm_13.val
+2) Lanciare rn
+3) Lanciare mrbb (produce tutti i file output)
+
+N.B. Ricordarsi, se si cambia qualcosa, di rilanciare wbb
+prima di rn!

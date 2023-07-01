@@ -1,0 +1,17 @@
+0           FLAG_ABL (1: ABL model included - 0: ABL model not included)
+1           ABL_MODEL (0:basic model - 1:coupled model) 
+120          ZABL0 - Initial ABL height [m]
+0.2         BETA
+0.0098      LAPSE
+44000  2.25E+6     LATHEAT [J/mol]
+1003   4183        CP
+1.2         RHO_A
+1000   0.7464      RHO_V..in realta' e' RHO_W..sistema!!! :)
+
+0.12        ALBEDO
+0.90         EPS_S 
+5.67E-8	    SIGMA
+22.5        ZM
+22.5        ZH
+
+
