@@ -27,7 +27,7 @@ We are considering the incorporation of plant data observations such as **leaf w
   - [source files](/src/)
 
 - Examples from literrature
-  - Work from Laura Busato - see [Busato](/examples/Busato/)
+  - Work from Laura Busato - see [Busato](/examples/README.md/# L. Busato example description/)
   - Work from Gabriele - see [Manoli](/examples/1_Gabriele_Piante_NON_modificato/)
 
 ### DA Procedure within CATHY plant model
