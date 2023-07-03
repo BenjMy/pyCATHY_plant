@@ -49,3 +49,13 @@ The procedure to prepare is logistically the same with a few changes:
 - B. Mary
 
 
+# References
+
+- Manoli, G., Bonetti, S., Scudiero, E., Teatini, P., Binning, P. J., Morari, F., Putti, M., and Marani, M. (2013b). Monitoring and modeling farmland productivity along the venice coastland, Italy. Procedia Environ. Sci., 19:361-368.
+
+
+
+
+
+
+

@@ -1,0 +1,681 @@
+FC            = gfortran
+
+FFLAGS      =    -O0
+
+DEST          = ${HOME}/bin
+
+EXTHDRS       =
+
+HDRS          =
+
+LDFLAGS      =    -O0
+
+#LIBS          = -lmass -llapack -lblas -lutils
+#LIBS          = -lmass -llapack -lessl -lutils
+LIBS          = -llapack -lblas
+
+LINKER        = ${FC}
+
+MAKEFILE      = Makefile
+
+OBJS          = adrstn.o \
+		altez_update.o \
+		altezze.o \
+                m_multa.o \
+                m_randrot.o \
+                m_mean_preserving_rotation.o \
+                mod_anafunc.o \
+                analysis.o \
+		area2d.o \
+		areas.o \
+		assign_dem.o \
+		assnew.o \
+		asspic.o \
+		atmbak.o \
+		atmnxt.o \
+		atmone.o \
+		atmrewind.o \
+		average.o \
+		basis6.o \
+		bcbak.o \
+		bcnew.o \
+		bcnxt.o \
+		bcone.o \
+		bcpic.o \
+		bknew.o \
+		bkpic.o \
+		bkstep.o \
+		block_data.o \
+		calcoli.o \
+		cathy_main.o \
+		cell_nod.o \
+		cfmatn.o \
+		cfmatp.o \
+		check.o \
+		chknew.o \
+		chkpic.o \
+		chmaspt.o \
+		chmass.o \
+		chnew0.o \
+		chnew1.o \
+		chnew2.o \
+		chnew3.o \
+		chnew4.o \
+		chparm.o \
+		chpic0.o \
+		chpic1.o \
+		chpic2.o \
+		chpic3.o \
+		chpic4.o \
+		chtann.o \
+		chtanp.o \
+		chvelo.o \
+		chvelop.o \
+		chvelop0.o \
+		closio.o \
+		conver.o \
+		cornr.o \
+		datin.o \
+		detout.o \
+		detoutq.o \
+		dtstat.o \
+		effnxt.o \
+		effone.o \
+		eltnod.o \
+		enaverage.o \
+		enaverage3d.o \
+		enmcopyi.o \
+		enmcopyr.o \
+		entimupd.o \
+		ert_init.o \
+		ert_measure.o \
+		extall.o \
+		extcvg.o \
+		extone.o \
+		fbcdds.o \
+		fbcdkr.o \
+		fbcdse.o \
+		fbckr.o \
+		fbcse.o \
+		fcdpore.o \
+		fcinde.o \
+		fhudds.o \
+		fhudk2.o \
+		fhudk3.o \
+		fhudse.o \
+		fhukr2.o \
+		fhukr3.o \
+		fhuse.o \
+		flow3d.o \
+		fluxmb.o \
+		fvgdds.o \
+		fvgdkr.o \
+		fvgdse.o \
+		fvgkr.o \
+		fvgse.o \
+		fxvddm.o \
+		fxvdkr.o \
+		fxvdmc.o \
+		fxvkr.o \
+		fxvmc.o \
+		gasdev.o \
+		gen3d.o \
+		grdsys.o \
+		hgraph.o \
+		icvdwt.o \
+		icvhe.o \
+		icvhwt.o \
+		index_dem.o \
+		init0i.o \
+		init0r.o \
+		init1.o \
+		init_sr.o \
+		init_surf.o \
+		inital.o \
+		initenkf.o \
+		interp.o \
+		interpnew.o \
+		interppic.o \
+		interppicpt.o \
+		interppt.o \
+		interpvel.o \
+		interpvelpt.o \
+		locmas.o \
+		masbal.o \
+		mbinit.o \
+		mc.o \
+		mcopyi.o \
+		mcopyr.o \
+                meteobak.o \
+                meteone.o \
+                meteonxt.o \
+		moistab.o \
+		moistabnew.o \
+		moistabpic.o \
+		moistabpicpt.o \
+		moistabpt.o \
+		moistabvel.o \
+		moistabvelpt.o \
+		newton.o \
+		newuns.o \
+		nod_cell.o \
+		nodelt.o \
+		norms.o \
+		nudcpt.o \
+		nudlocate.o \
+		nudnxt.o \
+		nudone.o \
+		nudpic.o \
+		nudwt.o \
+		nudwxy.o \
+		nudwz.o \
+		openio.o \
+		opnter.o \
+		peatch.o \
+		pert_ic.o \
+		pert_soil.o \
+		picard.o \
+		picuns.o \
+                plant_cond.o \
+                plant_leaf.o \
+                plant_nr.o \
+                plant_paratt.o \
+                plant_root.o \
+                plant_stoma.o \
+                plant_trasp.o \
+		pondupd.o \
+		ran1.o \
+		rast_input_dem.o \
+		rast_input_int.o \
+		rast_input_lz.o \
+		rast_input_real.o \
+		rast_output.o \
+		rdndbc.o \
+		readbc.o \
+		recharge.o \
+		relax.o \
+		relxom.o \
+		resample.o \
+		rhsgrv.o \
+		rhsnew.o \
+		rhspic.o \
+		riord.o \
+		route.o \
+		sat_frac.o \
+		serbatoio.o \
+		sfinit.o \
+		sfvbak.o \
+		sfvnxt.o \
+		sfvone.o \
+		sfvrec.o \
+		shlnew.o \
+		shlpic.o \
+		solscal-extended.o \
+		storcal.o \
+		stormb.o \
+		strnew.o \
+		strpic.o \
+		surf_route.o \
+		switch.o \
+		switch_old.o \
+		tetnew.o \
+		tetpic.o \
+		tim.o \
+		timnxt.o \
+		timupd.o \
+		timupdsup.o \
+		topia.o \
+		tpnodi.o \
+		tpnodi2d.o \
+		transfer_f3d_surf.o \
+		transfer_surf_f3d.o \
+		triangoli.o \
+		ucdnew.o \
+		upd_soil.o \
+		updatesir.o \
+		updeve.o \
+		vcopyi.o \
+		vcopyr.o \
+		vel3d.o \
+		vnod3d.o \
+		volbas.o \
+		volums.o \
+		vtkris1.o \
+		vtkris3d.o \
+		weight.o \
+		wtdepth.o
+
+PRINT         = pr
+
+PROGRAM       = cathy
+
+SRCS	      = adrstn.f \
+		altez_update.f \
+		altezze.f \
+                m_multa.f90 \
+                m_randrot.f90 \
+                m_mean_preserving_rotation.f90 \
+                mod_anafunc.f90 \
+                analysis.f90 \
+		area2d.f \
+		areas.f \
+		assign_dem.f \
+		assnew.f \
+		asspic.f \
+		atmbak.f \
+		atmnxt.f \
+		atmone.f \
+		atmrewind.f \
+		average.f \
+		basis6.f \
+		bcbak.f \
+		bcnew.f \
+		bcnxt.f \
+		bcone.f \
+		bcpic.f \
+		bknew.f \
+		bkpic.f \
+		bkstep.f \
+		block_data.f \
+		calcoli.f \
+		cathy_main.f \
+		cell_nod.f \
+		cfmatn.f \
+		cfmatp.f \
+		check.f \
+		chknew.f \
+		chkpic.f \
+		chmaspt.f \
+		chmass.f \
+		chnew0.f \
+		chnew1.f \
+		chnew2.f \
+		chnew3.f \
+		chnew4.f \
+		chparm.f \
+		chpic0.f \
+		chpic1.f \
+		chpic2.f \
+		chpic3.f \
+		chpic4.f \
+		chtann.f \
+		chtanp.f \
+		chvelo.f \
+		chvelop.f \
+		chvelop0.f \
+		closio.f \
+		conver.f \
+		cornr.f \
+		datin.f \
+		detout.f \
+		detoutq.f \
+		dtstat.f \
+		effnxt.f \
+		effone.f \
+		eltnod.f \
+		enaverage.f \
+		enaverage3d.f \
+		enmcopyi.f \
+		enmcopyr.f \
+		entimupd.f \
+		ert_init.f \
+		ert_measure.f \
+		extall.f \
+		extcvg.f \
+		extone.f \
+		fbcdds.f \
+		fbcdkr.f \
+		fbcdse.f \
+		fbckr.f \
+		fbcse.f \
+		fcdpore.f \
+		fcinde.f \
+		fhudds.f \
+		fhudk2.f \
+		fhudk3.f \
+		fhudse.f \
+		fhukr2.f \
+		fhukr3.f \
+		fhuse.f \
+		flow3d.f \
+		fluxmb.f \
+		fvgdds.f \
+		fvgdkr.f \
+		fvgdse.f \
+		fvgkr.f \
+		fvgse.f \
+		fxvddm.f \
+		fxvdkr.f \
+		fxvdmc.f \
+		fxvkr.f \
+		fxvmc.f \
+		gasdev.f \
+		gen3d.f \
+		grdsys.f \
+		hgraph.f \
+		icvdwt.f \
+		icvhe.f \
+		icvhwt.f \
+		index_dem.f \
+		init0i.f \
+		init0r.f \
+		init1.f \
+		init_sr.f \
+		init_surf.f \
+		inital.f \
+		initenkf.f \
+		interp.f \
+		interpnew.f \
+		interppic.f \
+		interppicpt.f \
+		interppt.f \
+		interpvel.f \
+		interpvelpt.f \
+		locmas.f \
+		masbal.f \
+		mbinit.f \
+		mc.f \
+		mcopyi.f \
+		mcopyr.f \
+                meteobak.f \
+                meteone.f \
+                meteonxt.f \
+		moistab.f \
+		moistabnew.f \
+		moistabpic.f \
+		moistabpicpt.f \
+		moistabpt.f \
+		moistabvel.f \
+		moistabvelpt.f \
+		newton.f \
+		newuns.f \
+		nod_cell.f \
+		nodelt.f \
+		norms.f \
+		nudcpt.f \
+		nudlocate.f \
+		nudnxt.f \
+		nudone.f \
+		nudpic.f \
+		nudwt.f \
+		nudwxy.f \
+		nudwz.f \
+		openio.f \
+		opnter.f \
+		peatch.f \
+		pert_ic.f \
+		pert_soil.f \
+		picard.f \
+		picuns.f \
+                plant_cond.f \
+                plant_leaf.f \
+                plant_nr.f \
+                plant_paratt.f \
+                plant_root.f \
+                plant_stoma.f \
+                plant_trasp.f \
+		pondupd.f \
+		ran1.f \
+		rast_input_dem.f \
+		rast_input_int.f \
+		rast_input_lz.f \
+		rast_input_real.f \
+		rast_output.f \
+		rdndbc.f \
+		readbc.f \
+		recharge.f \
+		relax.f \
+		relxom.f \
+		resample.f \
+		rhsgrv.f \
+		rhsnew.f \
+		rhspic.f \
+		riord.f \
+		route.f \
+		sat_frac.f \
+		serbatoio.f \
+		sfinit.f \
+		sfvbak.f \
+		sfvnxt.f \
+		sfvone.f \
+		sfvrec.f \
+		shlnew.f \
+		shlpic.f \
+		solscal-extended.f \
+		storcal.f \
+		stormb.f \
+		strnew.f \
+		strpic.f \
+		surf_route.f \
+		switch.f \
+		switch_old.f \
+		tetnew.f \
+		tetpic.f \
+		tim.f \
+		timnxt.f \
+		timupd.f \
+		timupdsup.f \
+		topia.f \
+		tpnodi.f \
+		tpnodi2d.f \
+		transfer_f3d_surf.f \
+		transfer_surf_f3d.f \
+		triangoli.f \
+		ucdnew.f \
+		upd_soil.f \
+		updatesir.f \
+		updeve.f \
+		vcopyi.f \
+		vcopyr.f \
+		vel3d.f \
+		vnod3d.f \
+		volbas.f \
+		volums.f \
+		vtkris1.f \
+		vtkris3d.f \
+		weight.f \
+		wtdepth.f
+
+.SUFFIXES: .prj
+
+.SUFFIXES: .f90
+
+.f.prj:
+	ftnchek -project -declare -noverbose $<
+
+.F.o:
+	$(FC) $(FFLAGS) -c $<
+
+.f90.o:
+	$(FC) $(FFLAGS) -c $<
+
+PRJS= $(SRCS:jo=.prj)
+
+all:		$(PROGRAM)
+
+$(PROGRAM):     $(OBJS) 
+		$(LINKER) -o $(PROGRAM) $(LDFLAGS) $(OBJS) $(LIBS)
+
+check: $(PRJS)
+	ftnchek -noverbose -declare $(PRJS) -project -noextern -library > $(PROGRAM).ftn
+
+profile:;       @make "FFLAGS=-pg" "CFLAGS=-pg" "LDFLAGS=-pg" $(PROGRAM)
+
+debug:;         @make "FFLAGS=-g -C  -q64=largetype -qarch=pwr6 -blpdata -qflttrap -qsigtrap" $(PROGRAM)
+
+clean:;		rm -f $(OBJS) $(PROGRAM).cat $(PROGRAM).ftn *.mod
+
+depend:;	mkmf -f $(MAKEFILE) PROGRAM=$(PROGRAM) DEST=$(DEST)
+
+index:;		ctags -wx $(HDRS) $(SRCS)
+
+install:	$(PROGRAM)
+		install -s $(PROGRAM) $(DEST)
+
+print:;		$(PRINT) $(HDRS) $(SRCS)
+
+cat:;		$(CAT) $(HDRS) $(SRCS) > $(PROGRAM).cat
+
+program:        $(PROGRAM)
+
+profile:        $(PROFILE)
+
+tags:           $(HDRS) $(SRCS); ctags $(HDRS) $(SRCS)
+
+update:		$(DEST)/$(PROGRAM)
+
+$(DEST)/$(PROGRAM): $(SRCS) $(LIBS) $(HDRS) $(EXTHDRS)
+		@make -f $(MAKEFILE) DEST=$(DEST) install
+
+adrstn.o: CATHY.H SOILCHAR.H
+altez_update.o: CATHY.H IOUNITS.H
+altezze.o: CATHY.H IOUNITS.H
+area2d.o: IOUNITS.H
+assign_dem.o: CATHY.H
+assnew.o: CATHY.H
+asspic.o: CATHY.H
+atmbak.o: CATHY.H RANDOM.H
+atmnxt.o: CATHY.H IOUNITS.H RANDOM.H
+atmone.o: CATHY.H IOUNITS.H SOILCHAR.H RANDOM.H
+atmrewind.o: CATHY.H IOUNITS.H
+bcnew.o: CATHY.H
+bcpic.o: CATHY.H
+bknew.o: CATHY.H
+bkpic.o: CATHY.H
+bkstep.o: CATHY.H SOILCHAR.H SURFWATER.H IOUNITS.H
+block_data.o: IOUNITS.H
+calcoli.o: CATHY.H IOUNITS.H
+cathy_main.o: CATHY.H MB_HGRAPH.H SOILCHAR.H SURFWATER.H RIVERNETWORK.H \
+	IOUNITS.H RANDOM.H
+cell_nod.o: CATHY.H
+check.o: IOUNITS.H
+chknew.o: IOUNITS.H
+chkpic.o: IOUNITS.H
+chmaspt.o: CATHY.H SOILCHAR.H
+chmass.o: CATHY.H SOILCHAR.H
+chnew0.o: CATHY.H SOILCHAR.H
+chnew1.o: CATHY.H SOILCHAR.H
+chnew2.o: CATHY.H SOILCHAR.H
+chnew3.o: CATHY.H SOILCHAR.H
+chnew4.o: CATHY.H SOILCHAR.H
+chparm.o: CATHY.H SOILCHAR.H IOUNITS.H
+chpic0.o: CATHY.H SOILCHAR.H
+chpic1.o: CATHY.H SOILCHAR.H
+chpic2.o: CATHY.H SOILCHAR.H
+chpic3.o: CATHY.H SOILCHAR.H
+chpic4.o: CATHY.H SOILCHAR.H
+chtann.o: CATHY.H SOILCHAR.H
+chtanp.o: CATHY.H SOILCHAR.H
+chvelo.o: CATHY.H SOILCHAR.H
+chvelop.o: CATHY.H SOILCHAR.H
+chvelop0.o: CATHY.H SOILCHAR.H
+closio.o: IOUNITS.H
+conver.o: CATHY.H NORMVL.H IOUNITS.H
+cornr.o: CATHY.H SOILCHAR.H
+datin.o: CATHY.H IOUNITS.H SOILCHAR.H SURFWATER.H RIVERNETWORK.H RANDOM.H
+detout.o: CATHY.H IOUNITS.H
+detoutq.o: CATHY.H IOUNITS.H
+effnxt.o: CATHY.H IOUNITS.H
+effone.o: CATHY.H IOUNITS.H
+entimupd.o: CATHY.H
+ert_measure.o: CATHY.H
+extall.o: CATHY.H IOUNITS.H
+extcvg.o: CATHY.H IOUNITS.H
+extone.o: CATHY.H IOUNITS.H
+fbcdds.o: CATHY.H SOILCHAR.H
+fbcdkr.o: CATHY.H SOILCHAR.H
+fbcdse.o: CATHY.H SOILCHAR.H
+fbckr.o: CATHY.H SOILCHAR.H
+fbcse.o: CATHY.H SOILCHAR.H
+fcdpore.o: CATHY.H SOILCHAR.H
+fcinde.o: CATHY.H SOILCHAR.H
+fhudds.o: CATHY.H SOILCHAR.H
+fhudk2.o: CATHY.H SOILCHAR.H
+fhudk3.o: CATHY.H SOILCHAR.H
+fhudse.o: CATHY.H SOILCHAR.H
+fhukr2.o: CATHY.H SOILCHAR.H
+fhukr3.o: CATHY.H SOILCHAR.H
+fhuse.o: CATHY.H SOILCHAR.H
+flow3d.o: CATHY.H NORMVL.H MB_HGRAPH.H IOUNITS.H
+fluxmb.o: CATHY.H IOUNITS.H
+fvgdds.o: CATHY.H SOILCHAR.H
+fvgdkr.o: CATHY.H SOILCHAR.H
+fvgdse.o: CATHY.H SOILCHAR.H
+fvgkr.o: CATHY.H SOILCHAR.H
+fvgse.o: CATHY.H SOILCHAR.H
+fxvddm.o: CATHY.H SOILCHAR.H
+fxvdkr.o: CATHY.H SOILCHAR.H
+fxvdmc.o: CATHY.H SOILCHAR.H
+fxvkr.o: CATHY.H SOILCHAR.H
+fxvmc.o: CATHY.H SOILCHAR.H
+gen3d.o: IOUNITS.H
+grdsys.o: IOUNITS.H
+hgraph.o: CATHY.H SOILCHAR.H IOUNITS.H
+icvdwt.o: IOUNITS.H
+icvhe.o: IOUNITS.H
+icvhwt.o: IOUNITS.H
+index_dem.o: IOUNITS.H
+init1.o: CATHY.H
+init_sr.o: CATHY.H SURFWATER.H
+init_surf.o: CATHY.H SURFWATER.H
+inital.o: CATHY.H MB_HGRAPH.H SURFWATER.H RIVERNETWORK.H IOUNITS.H
+initenkf.o: CATHY.H SOILCHAR.H
+interp.o: CATHY.H SOILCHAR.H
+interpnew.o: CATHY.H SOILCHAR.H
+interppic.o: CATHY.H SOILCHAR.H
+interppicpt.o: CATHY.H SOILCHAR.H
+interppt.o: CATHY.H SOILCHAR.H
+interpvel.o: CATHY.H SOILCHAR.H
+interpvelpt.o: CATHY.H SOILCHAR.H
+masbal.o: CATHY.H MB_HGRAPH.H
+mbinit.o: IOUNITS.H
+meteobak.o: PLANT.H
+meteone.o: PLANT.H
+meteonxt.o: PLANT.H
+newton.o: CATHY.H IOUNITS.H
+nod_cell.o: CATHY.H IOUNITS.H
+nudlocate.o: IOUNITS.H
+nudnxt.o: CATHY.H IOUNITS.H
+nudone.o: CATHY.H IOUNITS.H
+nudpic.o: CATHY.H
+openio.o: IOUNITS.H
+peatch.o: CATHY.H SOILCHAR.H
+pert_ic.o: CATHY.H RANDOM.H IOUNITS.H
+pert_soil.o: CATHY.H SOILCHAR.H IOUNITS.H RIVERNETWORK.H RANDOM.H
+picard.o: CATHY.H IOUNITS.H
+plant_cond.o: CATHY.H SOILCHAR.H PLANT.H
+plant_leaf.o: CATHY.H IOUNITS.H PLANT.H
+plant_nr.o: CATHY.H IOUNITS.H PLANT.H
+plant_paratt.o: CATHY.H PLANT.H
+plant_root.o: CATHY.H PLANT.H
+plant_stoma.o: CATHY.H PLANT.H
+plant_trasp.o: CATHY.H PLANT.H
+pondupd.o: IOUNITS.H
+rast_input_dem.o: CATHY.H
+rast_input_int.o: CATHY.H
+rast_input_lz.o: CATHY.H
+rast_input_real.o: CATHY.H
+recharge.o: CATHY.H IOUNITS.H
+resample.o: CATHY.H RANDOM.H IOUNITS.H SOILCHAR.H RIVERNETWORK.H
+rhsgrv.o: CATHY.H
+route.o: CATHY.H RIVERNETWORK.H SURFWATER.H IOUNITS.H
+serbatoio.o: CATHY.H IOUNITS.H
+sfinit.o: CATHY.H IOUNITS.H
+shlnew.o: CATHY.H
+shlpic.o: CATHY.H
+strnew.o: IOUNITS.H
+strpic.o: IOUNITS.H
+surf_route.o: CATHY.H SURFWATER.H IOUNITS.H RIVERNETWORK.H
+switch.o: CATHY.H IOUNITS.H SOILCHAR.H
+switch_old.o: CATHY.H SOILCHAR.H
+tpnodi.o: CATHY.H IOUNITS.H
+tpnodi2d.o: CATHY.H
+transfer_f3d_surf.o: CATHY.H IOUNITS.H
+transfer_surf_f3d.o: CATHY.H IOUNITS.H
+triangoli.o: CATHY.H IOUNITS.H
+upd_soil.o: CATHY.H SOILCHAR.H IOUNITS.H RIVERNETWORK.H
+updatesir.o: CATHY.H SOILCHAR.H IOUNITS.H
+updeve.o: CATHY.H SOILCHAR.H IOUNITS.H RANDOM.H
+vel3d.o: CATHY.H
+volbas.o: IOUNITS.H
+wtdepth.o: CATHY.H IOUNITS.H
