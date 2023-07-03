@@ -3,7 +3,7 @@
 This documentation provides an overview of the project code and presents the encouraging results obtained through the implementation of Data Assimilation (DA) techniques to enhance the performance of the CATHY hydrological model solver and invert model parameters.
 
 ## Introduction
-The objective of this project is to improve the accuracy and reliability of the CATHY model by integrating DA methodologies. In this implementation, we have utilized [pyCATHY](https://github.com/BenjMy/pycathy_wrapper), a Python wrapper for CATHY, to externally incorporate DA functionality and streamline file updates through Python routines.
+The objective of this project is to improve the accuracy and reliability of the CATHY model by integrating DA methodologies. In this implementation, we have utilized [pyCATHY] https://github.com/BenjMy/pycathy_wrapper), a Python wrapper for CATHY, to externally incorporate DA functionality and streamline file updates through Python routines.
 
 **Successful Assimilation with pyCATHY**
 DA using pyCATHY has shown promising results for: 
