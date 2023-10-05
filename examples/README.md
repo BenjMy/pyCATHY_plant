@@ -58,7 +58,7 @@ assumed, or taken from literature;
 - On the basis of these data, we considered precipitation negligible.
 
 
-# G. Manoli Busato example description
+# G. Manoli example description
 
 **The exemple is thourougly described in G. Manoli PhD thesis manuscript: Contribution to modeling of soil-plant-atmosphere interactions and coupled hydro-geophysical data assimilation (2013).** and accessible at: https://hdl.handle.net/11577/3423556
 
