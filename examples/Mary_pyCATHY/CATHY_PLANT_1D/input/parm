@@ -1,25 +1,18 @@
-    1         0                           IPRT1  DAFLAG    (units: m , sec)
-    0         0.000                       ISIMGR PONDH_MIN
-    0         0.01                        KSLOPE TOLKSL
-   -3.0      -1.0      -3.0      -1.0     PKRL   PKRR   PSEL   PSER
-   -3.0      -2.5      -1.5      -1.0     PDSE1L PDSE1R PDSE2L PDSE2R
-    0         0         0                 ISFONE ISFCVG DUPUIT ???
-    1         1         1                 TETAF  LUMP   IOPT
-    1         0.2                         NLRELX OMEGA
-    0         5.0e-03   1.0e+30  1.0e+30  L2NORM TOLUNS TOLSWI  ERNLMX ??
-   30         6         12                ITUNS  ITUNS1 ITUNS2
-    0       500         1.0e-10           ISOLV  ITMXCG TOLCG
-   120        1.0e-2    1200   864000     DELTAT DTMIN  DTMAX  TMAX
-   0.0      1.20       0.0      0.80      DTMAGA DTMAGM DTREDS DTREDM
-    2      3 
-    4.0e5
-    6.0e5
-    8.0e5       IPRT   NPRT   TIMPRT(I),I=1,NPRT  
-    1  1000          NUMVP  NODVP(I),I=1,NUMVP
-    4             NR (# of output nodes)   
-    23
-    59
-    77
-    95              (CONTR(I),I=1,NR)
-    0         NUM_QOUT                 
-    0        (ID_QOUT(I)
+1.0 	 0.0 	 IPRT1  DAFLAG
+0.0 	 0.0 	 ISIMGR  PONDH_MIN
+0.0 	 0.01 	 KSLOPE  TOLKSL
+-3.0 	 -1.0 	 -3.0 	 -1.0 	 PKRL  PKRR  PSEL  PSER
+-3.0 	 -2.5 	 -1.5 	 -1.0 	 PDSE1L  PDSE1R  PDSE2L  PDSE2R
+0.0 	 0.0 	 0.0 	 ISFONE  ISFCVG  DUPUIT
+1.0 	 1.0 	 1.0 	 TETAF  LUMP  IOPT
+1.0 	 0.0 	 NLRELX  OMEGA
+0.0 	 0.005 	 1e+30 	 1e+30 	 L2NORM  TOLUNS  TOLSWI  ERNLMX
+30.0 	 6.0 	 12.0 	 ITUNS  ITUNS1  ITUNS2
+0.0 	 500.0 	 1e-10 	 ISOLV  ITMXCG  TOLCG
+120.0 	 0.01 	 1200.0 	 864000.0 	 DELTAT  DTMIN  DTMAX  TMAX
+0.0 	 1.2 	 0.0 	 0.8 	 DTMAGA  DTMAGM  DTREDS  DTREDM
+2.0 	 3.0 	  400000.0  600000.0  800000.0  	 IPRT  NPRT  TIMPRT(I),I=1,NPRT
+1.0 	 1000.0 	 NUMVP  NODVP(I),I=1,NUMVP
+0.0 	 NR
+0.0 	 NUM_QOUT
+0.0 	 (ID_QOUT(I)

@@ -1,0 +1,196 @@
+C
+C**************************  INITENKF **********************************
+C
+C  initialization of EnKF arrays for surface routing module
+C
+C***********************************************************************
+C
+      SUBROUTINE INITENKF(NNOD,NUMRES,NENS,IFATM,IPOND,PONDH_MIN,
+     1                    H_POOL_KKP1_VEC,ENPNEW,ENPTIMEP,ENATMPOT,
+     2                    ENATMOLD,ENIFATM,ENIFATMP,ENOVFLNOD,
+     3                    ENOVFLP,ENPONDNOD,ENQ_IN_KK_SN,
+     4                    ENQ_IN_KK_SN_SAV,ENQ_IN_KK_SN_P,
+     5                    ENQ_IN_KKP1_SN,ENQ_OUT_KK_SN_1,
+     6                    ENQ_OUT_KK_SN_1_SAV,ENQ_OUT_KK_SN_1_P,
+     7                    ENQ_OUT_KKP1_SN_1,ENQ_OUT_KK_SN_2,
+     8                    ENQ_OUT_KK_SN_2_SAV,ENQ_OUT_KK_SN_2_P,
+     9                    ENQ_OUT_KKP1_SN_2,ENVOLUME_KK_SN,
+     A                    ENVOLUME_KK_SN_SAV,ENVOLUME_KK_SN_P,
+     B                    ENVOLUME_KKP1_SN,ENH_POOL_KK_VEC,
+     C                    ENH_POOL_KK_VEC_SAV,ENH_POOL_KK_VEC_P,
+     D                    ENH_POOL_KKP1_VEC,ENPONDING,ENPONDP,
+     E                    ENAK_MAX,ENAK_MAX_SAV,ENAK_MAX_P,WSIR,
+     F                    RESAMP,TIMEOUT,ENNOUT,ENTIMEOUT,ENPT,NENS0,
+     G                    ENOUTFLOW,ENOUTVOL,ENOUTSURVOL,ENOUTATMPOT,
+     H                    DTOUT,TMAX,ENFLAG,DELTAT0,UPD,ENDELTAT,
+     I                    ENNSTEP,ENITLIN,ENITRTOT,ENDTBIG,
+     L                    ENTBIG,ENDTSMAL,ENTSMAL,ENDTAVG,DELTAT,
+     M                    ENKFCTR,ENBKSTEP,TIME,ENOUTPOND)
+C
+      IMPLICIT NONE
+      INCLUDE 'CATHY.H'
+      INTEGER  I,J
+      INTEGER  NNOD,NUMRES,NENS,IPOND,NENS0,ENKFCTR
+      INTEGER  IFATM(NODMAX),ENNOUT(MAXNENS)
+      INTEGER  ENIFATM(NODMAX,MAXNENS),ENIFATMP(NODMAX,MAXNENS)
+      INTEGER  ENPT(MAXNENS),ENNSTEP(MAXNENS),ENITLIN(MAXNENS)
+      INTEGER  ENITRTOT(MAXNENS)
+      LOGICAL  ENPONDING(MAXNENS),ENPONDP(MAXNENS),RESAMP,UPD
+      LOGICAL  ENFLAG(MAXNENS),ENBKSTEP(MAXNENS)
+      REAL*8   PONDH_MIN,TMAX,DTOUT,DELTAT0,DELTAT,TIME
+      REAL*8   H_POOL_KKP1_VEC(MAXRES),WSIR(MAXNENS)
+      REAL*8   ENPNEW(NMAX,MAXNENS),ENPTIMEP(NMAX,MAXNENS)
+      REAL*8   ENATMPOT(NODMAX,MAXNENS),ENATMOLD(NODMAX,MAXNENS)
+      REAL*8   ENOVFLNOD(NODMAX,MAXNENS),ENOVFLP(NODMAX,MAXNENS)
+      REAL*8   ENPONDNOD(NODMAX,MAXNENS)
+      REAL*8   ENQ_IN_KK_SN(MAXCEL,MAXNENS)
+      REAL*8   ENQ_IN_KK_SN_SAV(MAXCEL,MAXNENS)
+      REAL*8   ENQ_IN_KK_SN_P(MAXCEL,MAXNENS)
+      REAL*8   ENQ_IN_KKP1_SN(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KK_SN_1(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KK_SN_1_SAV(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KK_SN_1_P(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KKP1_SN_1(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KK_SN_2(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KK_SN_2_SAV(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KK_SN_2_P(MAXCEL,MAXNENS)
+      REAL*8   ENQ_OUT_KKP1_SN_2(MAXCEL,MAXNENS)
+      REAL*8   ENVOLUME_KK_SN(MAXCEL,MAXNENS)
+      REAL*8   ENVOLUME_KK_SN_SAV(MAXCEL,MAXNENS)
+      REAL*8   ENVOLUME_KK_SN_P(MAXCEL,MAXNENS)
+      REAL*8   ENVOLUME_KKP1_SN(MAXCEL,MAXNENS)
+      REAL*8   ENH_POOL_KK_VEC(MAXRES,MAXNENS)
+      REAL*8   ENH_POOL_KK_VEC_SAV(MAXRES,MAXNENS)
+      REAL*8   ENH_POOL_KK_VEC_P(MAXRES,MAXNENS)
+      REAL*8   ENH_POOL_KKP1_VEC(MAXRES,MAXNENS)
+      REAL*8   ENAK_MAX(MAXNENS),ENAK_MAX_SAV(MAXNENS)
+      REAL*8   ENAK_MAX_P(MAXNENS)
+      REAL*8   TIMEOUT(MAXENNOUT),ENTIMEOUT(MAXENNOUT,MAXNENS)
+      REAL*8   ENOUTFLOW(MAXENNOUT,MAXNENS)
+      REAL*8   ENOUTVOL(MAXENNOUT,MAXNENS)
+      REAL*8   ENOUTSURVOL(MAXENNOUT,MAXNENS)
+      REAL*8   ENOUTPOND(MAXENNOUT,MAXNENS)
+      REAL*8   ENOUTATMPOT(MAXENNOUT,MAXNENS)
+      REAL*8   ENDELTAT(MAXNENS),ENDELTATP(MAXNENS),ENDTBIG(MAXNENS)
+      REAL*8   ENTBIG(MAXNENS),ENDTSMAL(MAXNENS),ENTSMAL(MAXNENS)
+      REAL*8   ENDTAVG(MAXNENS)
+      INCLUDE 'SOILCHAR.H'
+C
+      NENS0=NENS
+      DELTAT0=DELTAT
+      DO J=1,NENS
+         ENPONDING(J)=.FALSE.
+         ENPONDP(J)=ENPONDING(J)
+         ENAK_MAX(J)=0.0d0
+         ENAK_MAX_SAV(J)=0.0d0
+         ENAK_MAX_P(J)=0.0d0
+         WSIR(J)=1.0d0/NENS
+      END DO
+      IF (IPOND.NE.0) THEN
+         DO J=1,NENS
+            DO I=1,NNOD
+               IF (ENPNEW(I,J).GE.PONDH_MIN) THEN
+                   ENPONDNOD(I,J)=ENPNEW(I,J)
+                   ENPONDING(J)=.TRUE.
+               ELSE
+                   ENPONDNOD(I,J)=0.0d0
+               END IF
+               ENOVFLNOD(I,J)=0.0d0
+               ENOVFLP(I,J)=0.0d0
+            END DO
+            ENPONDP(J)=ENPONDING(J)
+         END DO
+      END IF
+      DO I=1,NNOD
+         DO J=1,NENS
+            ENIFATM(I,J)=0
+            ENIFATMP(I,J)=0
+            IF (IFATM(I) .EQ. -1) THEN
+               ENIFATM(I,J) = -1
+               ENIFATMP(I,J) = -1
+               GO TO 901
+            END IF
+            IF (ENPNEW(I,J) .GE. PONDH_MIN) THEN
+               ENIFATM(I,J) = 2
+               ENIFATMP(I,J) = 2
+               GO TO 901
+            END IF
+            IF (ENPNEW(I,J).GE.0.0D0.AND.ENATMPOT(I,J).GT.0.0D0) THEN
+               ENIFATM(I,J)=1
+            END IF
+            IF (ENPTIMEP(I,J).GE.0.0D0.AND.ENATMOLD(I,J).GT.0.0D0) THEN
+               ENIFATMP(I,J)=1
+            END IF
+            IF (ENPNEW(I,J).LE.PMIN.AND.ENATMPOT(I,J).LT.0.0D0) THEN
+                  ENPNEW(I,J)=PMIN
+                  ENIFATM(I,J)=1
+            END IF
+            IF (ENPTIMEP(I,J).LE.PMIN.AND.ENATMOLD(I,J).LT.0.0D0) THEN
+               ENPTIMEP(I,J)=PMIN
+               ENIFATMP(I,J)=1
+            END IF
+  901       CONTINUE
+         END DO
+      END DO
+cp      MAXENNOUT=INT(TMAX/DTOUT)+2+NOBS
+      DO J=1,NENS
+         DO I=1,MAXCEL
+            ENVOLUME_KK_SN(I,J)=0.0D0
+            ENVOLUME_KK_SN_SAV(I,J)=0.0D0
+            ENVOLUME_KK_SN_P(I,J)=0.0D0
+            ENVOLUME_KKP1_SN(I,J)=0.0D0
+            ENQ_IN_KK_SN(I,J)=0.0D0
+            ENQ_IN_KK_SN_SAV(I,J)=0.0D0
+            ENQ_IN_KK_SN_P(I,J)=0.0D0
+            ENQ_IN_KKP1_SN(I,J)=0.0D0
+            ENQ_OUT_KK_SN_1(I,J)=0.0D0
+            ENQ_OUT_KK_SN_1_SAV(I,J)=0.0D0
+            ENQ_OUT_KK_SN_1_P(I,J)=0.0D0
+            ENQ_OUT_KKP1_SN_1(I,J)=0.0D0
+            ENQ_OUT_KK_SN_2(I,J)=0.0D0
+            ENQ_OUT_KK_SN_2_SAV(I,J)=0.0D0
+            ENQ_OUT_KK_SN_2_P(I,J)=0.0D0
+            ENQ_OUT_KKP1_SN_2(I,J)=0.0D0
+         END DO
+         DO I=1,NUMRES
+            ENH_POOL_KK_VEC(I,J)=0.0D0
+            ENH_POOL_KK_VEC_P(I,J)=0.0D0
+            ENH_POOL_KKP1_VEC(I,J)=H_POOL_KKP1_VEC(I)
+            ENH_POOL_KK_VEC_SAV(I,J)=H_POOL_KKP1_VEC(I)
+         END DO
+         DO I=1,MAXENNOUT
+            ENTIMEOUT(I,J)=0.0D0
+            ENOUTFLOW(I,J)=0.0D0
+            ENOUTVOL(I,J)=0.0D0
+            ENOUTSURVOL(I,J)=0.0D0
+            ENOUTPOND(I,J)=0.0D0
+            ENOUTATMPOT(I,J)=0.0d0
+         END DO
+         ENFLAG(J)=.TRUE.
+         ENBKSTEP(J)=.FALSE.
+         ENPT(J)=J
+         ENDELTAT(J)=DELTAT0
+         ENDELTATP(J)=DELTAT0
+         ENNSTEP(J)=1
+         ENITLIN(J)=0
+         ENITRTOT(J)=0
+         ENDTBIG(J)=DELTAT0
+         ENTBIG(J)=TIME
+         ENDTSMAL(J)=DELTAT0
+         ENTSMAL(J)=TIME
+         ENDTAVG(J)=DELTAT0
+      END DO
+      DO I=1,MAXENNOUT
+         TIMEOUT(I)=0.0D0
+      END DO
+      RESAMP=.TRUE.
+      UPD=.FALSE.  
+C
+C Initialize counter for EnKF/SIR observations
+C
+      ENKFCTR=1
+
+
+C
+      RETURN
+      END

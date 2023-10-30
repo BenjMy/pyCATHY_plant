@@ -37,8 +37,15 @@ The total simulation time is therefore 15 days, and the time step is kept consta
 #https://lists.mcs.anl.gov/pipermail/petsc-users/2010-November/007299.html
 
 #%%
+
+# - create prepro folder into github pyCATHY plant
+# - create updaters for inputs plant CATHY model
+
+#%%
 import pyCATHY
 from pyCATHY import CATHY
+from pyCATHY.importers import cathy_inputs as CTin
+
 import pandas as pd
 import numpy as np
 import os 
@@ -46,11 +53,45 @@ import os
 import utils_Busato
 #%%
 Busato_a_TREE = CATHY(dirName='../examples/Mary_pyCATHY/',
-                      prj_name='49_2016_04_28_a_TREE') # + 'test')
+                      prj_name='49_2016_04_28_a_TREE',
+                      version='G. Manoli') # + 'test')
 
+
+#%% ISIMGR = 1 to use the DEM to build the mesh
+# Otherwise if ISIMGR=0, use grid file
+Busato_a_TREE.update_parm(ISIMGR=0)
 
 #%%
 Busato_a_TREE.run_preprocessor(verbose=True)
+
+#%%
+
+# Busato_a_TREE.create_mesh_vtk()
+
+#%%
+file2read = os.path.join(Busato_a_TREE.workdir,
+                         Busato_a_TREE.project_name,
+                         'input',
+                         'plant_parm'
+                         )
+plant_parm_dict = CTin.read_plant_parm(file2read)
+
+#%%
+#%%
+# Busato_a_TREE.update_plant_salt
+# Busato_a_TREE.update_plant_meteo()
+# Busato_a_TREE.update_plant_parm()
+# Busato_a_TREE.update_plant_growth()
+
+#%%
+
+# Busato_a_TREE = CATHY(dirName='../examples/Mary_pyCATHY/',
+#                       prj_name='49_2016_04_28_a_TREE',
+#                       ) # + 'test')
+
+
+#%%
+# Busato_a_TREE.run_preprocessor(verbose=True)
 
 #%%
 Busato_a_TREE.run_processor(verbose=True)

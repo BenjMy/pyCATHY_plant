@@ -1,0 +1,208 @@
+C
+C --------------------------  PLANT_COND  ----------------------------------
+C
+C  Calculate Root - Soil conductances
+C 
+C --------------------------------------------------------------------------
+C
+
+      SUBROUTINE PLANT_COND(N,NT,TP,TETRA,KS,CKRW,VOLNOD,SUMRDF,
+     1                      PLNNOD,PLNODES,PNEW,KRS,X,Y,Z,
+     2                      SUM1,SUM2,SW,PNODI,IVGHU,SALT_FLAG,SALT3D,
+     3                      ROOTGROWTH,GROWTH_FLAG)
+
+      IMPLICIT NONE 
+
+      INCLUDE 'CATHY.H'
+      INCLUDE 'SOILCHAR.H'
+
+C  Input variables
+      INTEGER N,NT,TP,TETRA(5,*),PLNNOD(PLMAX),PLNODES(PLMAX,PLNODMAX)
+      INTEGER IVGHU
+      REAL*8  KS(*),CKRW(NMAX),PNEW(NMAX),VOLNOD(NMAX)
+      REAL*8  RDF
+      REAL*8  SUMRDF(PLMAX),SW(NMAX),PNODI(NMAX)
+      REAL*8  SALT3D(NMAX),ROOTGROWTH
+      LOGICAL SALT_FLAG,GROWTH_FLAG
+C  Output variables
+      REAL*8  GRS,KRS(PLMAX,PLNODMAX)
+      REAL*8  SUM1(PLMAX),SUM2(PLMAX)
+C  Local variables
+      INTEGER I,J,K,PLNOD
+      INTEGER JNOD,JTYPE
+      REAL*8  KSNOD(NMAX),KSAT,GSOIL,GROOT,NRDF
+      REAL*8  L,F1,F2,F,SWR,XP,ZP,YP,PLDIST
+      REAL*8  X(NMAX),Y(NMAX),Z(NMAX)
+      REAL*8  AX,AY,AZ,BX,BY,BZ,XM,YM,ZM
+    
+      INCLUDE 'PLANT.H'
+
+C --------------------------------------------------------------------------
+
+      
+C     Inizialization
+      NRDF  = 0.D0
+      GSOIL = 0.D0
+      GROOT = 0.D0
+      GRS  = 0.D0
+
+      DO J=1,NPLANT
+         SUM1(J)      = 0.D0
+         SUM2(J)      = 0.D0
+         DO I=1,PLNNOD(J)
+            KRS(J,I)  = 0.D0
+         ENDDO
+      ENDDO
+
+C --------------------------------------------------------------------------
+
+C     Start loop on the # of plants
+      DO J = 1,NPLANT
+
+        JNOD = INODP(J)
+        JTYPE = ITYPEP(J)
+
+        IF (GROWTH_FLAG) THEN
+           XM = XMAXP(JTYPE)
+           YM = YMAXP(JTYPE)
+           ZM = ZMAXP(JTYPE)*(ROOTGROWTH+1e-6)
+        ELSE
+           XM = XMAXP(JTYPE)
+           YM = YMAXP(JTYPE)
+           ZM = ZMAXP(JTYPE)
+        ENDIF
+
+C       Start loop on the # of nodes related to the current plant
+        DO I = 1,PLNNOD(J)
+
+C          Calculate the same parameters calculated in plant_root
+           PLNOD = PLNODES(J,I)
+           ZP    = ABS(Z(INODP(J))-Z(PLNOD))
+           XP    = ABS(X(INODP(J))-X(PLNOD))
+           YP    = ABS(Y(INODP(J))-Y(PLNOD))
+           PLDIST= SQRT(XP**2+YP**2+ZP**2)
+
+           IF (XP.LE.XM) THEN
+              AX = 1-XP/XM
+           ELSE
+              AX = 0.D0
+           ENDIF
+           IF (YP.LE.YM) THEN
+              AY = 1-YP/YM
+           ELSE
+              AY = 0.D0
+           ENDIF
+           IF (ZP.LE.ZM) THEN
+              AZ = 1-ZP/ZM
+           ELSE
+              AZ = 0.D0
+           ENDIF
+
+           BX = VRUX(JTYPE)/XM*
+     1          ABS(VRUX1(JTYPE)-XP)
+           BY = VRUY(JTYPE)/YM*
+     1          ABS(VRUY1(JTYPE)-YP)
+           BZ = VRUZ(JTYPE)/ZM*
+     1          ABS(VRUZ1(JTYPE)-ZP)
+
+           RDF = AX*AY*AZ*EXP(-(BX+BY+BZ))
+
+
+           NRDF  = RDF*VOLNOD(PLNOD)/SUMRDF(J)
+           L     = (VOLNOD(PLNOD)**(1/3))*SQRT(3.d0)
+C          Calculate Soil conductance GSOIL:          
+           GSOIL = GSOIL_STAR(ITYPEP(J))*NRDF/L
+c          Calculate Root conductance GROOT:
+           GROOT = NRDF*GROOT_STAR(ITYPEP(J))
+   
+C          Flux is limited to wetted roots using effective saturation
+C          Only Van Genuchten case is implemented -for the moment-
+           IF (IVGHU.EQ.0) THEN
+              SWR = VGRMC/PNODI(PLNOD)
+              F1 = (SW(PLNOD)-SWR)/(1-SWR)
+           ELSE
+              F1 = SW(PLNOD)    
+           ENDIF
+
+C *****************************************************
+C          If salt flag -> phytotoxicity is considered:
+
+c           IF (SALT_FLAG) THEN
+C  Accordig to D'Odorico
+C               F2 = EXP(-SALT_TOX(JTYPE)*SALT3D(PLNOD))
+c           ENDIF
+
+c               IF(SALT3D(PLNOD).LT.3.66) THEN
+c                  F2=1
+c               ELSEIF(SALT3D(PLNOD).GT.10)THEN
+c                  F2=0.d0
+c               ELSE
+c                  F2=1-0.138
+c               ENDIF           
+c               F2 = -0.165*SALT3D(PLNOD)+1
+c           ENDIF
+
+c               F = F1*F2
+c           ELSE
+C          Else phytotoxicity is not condidered:
+               F = F1
+C           ENDIF
+C *****************************************************
+
+C          Calculate ROOT-SOIL conductance:
+C          If GROOT = GSOIL = 0          ---> GRS=0 (No trasp flux from this node) 
+           IF((GROOT.EQ.0).AND.(GSOIL.EQ.0)) THEN
+              GRS = 0.D0
+              KRS(J,I) = 0.D0
+C          If GSOIL = 0 and GROOT not= 0 ---> GRS=GROOT
+           ELSEIF ((GSOIL.EQ.0).AND.(GROOT.NE.0)) THEN
+              GRS= GROOT
+c                If the node distance from the plant is =0 (i.e. the 
+C                node coincides with the plant position node) Trasp flux 
+C                from that node is put =0 (by imposing KRS=0)
+                 IF (PLDIST.EQ.0) THEN
+                    KRS(J,I) = 0.D0
+                 ELSE
+                    KRS(J,I) = GRS*F/PLDIST
+                 ENDIF
+C          If GSOIL not= 0 and GROOT = 0 ---> GRS=GSOIL
+           ELSEIF ((GSOIL.NE.0).AND.(GROOT.EQ.0)) THEN
+              GRS= GSOIL
+c                If the node distance from the plant is =0 (i.e. the 
+C                node coincides with the plant position node) Trasp flux 
+C                from that node is put =0 (by imposing KRS=0)
+                 IF (PLDIST.EQ.0) THEN
+                    KRS(J,I) = 0.D0
+                 ELSE
+                    KRS(J,I) = GRS*F/PLDIST
+                 ENDIF
+
+           ELSE
+C          If GSOIL not= 0 and GROOT not= 0 ---> GRS is calculated as 
+C          the series of GSOIL and GROOT
+              GRS = GSOIL*GROOT/(GSOIL+GROOT)
+c                If the node distance from the plant is =0 (i.e. the 
+C                node coincides with the plant position node) Trasp flux 
+C                from that node is put =0 (by imposing KRS=0)
+                 IF (PLDIST.EQ.0) THEN
+                    KRS(J,I) = 0.D0
+                 ELSE
+                    KRS(J,I) = GRS*F/PLDIST
+                 ENDIF
+            ENDIF
+C         Calculate SUM1 and SUM2 (to be used in subroutine plant_nr)
+          SUM1(J) = SUM1(J) + KRS(J,I)*VOLNOD(PLNOD)*
+     1              (PNEW(PLNOD)-ZP)
+          SUM2(J) = SUM2(J) + KRS(J,I)*VOLNOD(PLNOD)
+
+C       End loop on the # of nodes belonging to the current plant
+        ENDDO
+
+C     End loop on the # of plants       
+      ENDDO
+
+C --------------------------------------------------------------------------
+
+      RETURN
+ 
+      END 

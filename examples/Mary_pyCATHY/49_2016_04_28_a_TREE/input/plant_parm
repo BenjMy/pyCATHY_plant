@@ -1,5 +1,5 @@
 1    1                     NPLANT, NPTYPE
-0			   ACANOFLAG (=1 if ACANO = ARENOD)
+0			    ACANOFLAG (=1 if ACANO = ARENOD)
 0                          PLANT_PRINT (1:Print 2d (ONLY IF several plants, e.g. nplant=nnod) - ELSE: Only 3d)
 5                          NMETEODATA (4: if LAI constant, 5: LAI(t), 12 if ABL)
 0.1E+07                    RHOW [g/L^3] [g/m^3]
@@ -8,11 +8,11 @@
 0.1E-05    30    -20.0     TOLLNR,ITMAXNR,PSILEAF0
 3600 24                    PSTEP,NPMED (NPMED (e.g. 24) is # of intervals of PSTEP seconds (e.g. 3600), MUST be NPMED*PSTEP=86400,PSTEP>DTMAX)
 
-25		1
+25		1	    NODOI TIPOI
 
 0.6           1             XMAXP        [L]
 0.6           1             YMAXP        [L]
-0.4           0.50          ZMAXP        [L] -> This must agree with the rdf profile below (ZRDF,RDFVAL)
+0.4           0.50          ZMAXP        [L] 
 1.00          1.00          VRUX         [-]
 1.00          1.00          VRUY         [-]
 1.00          1.00          VRUZ         [-]
@@ -43,7 +43,7 @@
 1             1             GSFLAG (1=linear GS, 2=non linear GS - see Katul 2010)
 
  5			    NDATA_RDF
- 0.0	      2.00e4	    ZRDF(NDATA_RDF)  RDFVAL (value of RDF at z = ZRDF)
+ 0.0	      2.00e4	    ZRDF  RDFVAL (value of RDF at z = ZRDF)
 -0.1          5.18e3
 -0.2          1.34e3
 -0.3	      3.64e2

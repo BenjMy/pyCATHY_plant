@@ -2,21 +2,21 @@ C
 C**************************  DATIN  ************************************
 C
 C  read in some of the input data (other data is read in subroutines
-C  BCONE, BCNXT, ATMONE, ATMNXT, NUDONE, NUDNXT, EFFONE, EFFNXT, and
-C  RAST_INPUT)
+C  BCONE, BCNXT, ATMONE, ATMNXT, NUDONE, NUDNXT, EFFONE, EFFNXT, RAST_INPUT,
+C  FORCE_FLOWDIR, and FORCE_HG)
 C
 C***********************************************************************
 C
       SUBROUTINE DATIN(ISIMGR,IVERT,ISP,WTPOSITION,BASE,ZRATIO, 
      1                 TRIANG,X,Y,Z,PERMX,PERMY,PERMZ,ELSTOR,
-     2                 POROS,VGNCELL,VGRMCCELL,VGPSATCELL,CONTR,NODVP,
-     3                 ID_QOUT,TIMPRT,PONDNOD,PTIMEP,TETAF,
+     2                 POROS,CONTR,NODVP,ID_QOUT,
+     3                 TIMPRT,PONDNOD,PTIMEP,TETAF,
      4                 DELTAT,DTMIN,DTMAX,TMAX,DTMAGA,DTMAGM,
-     5                 DTREDS,DTREDM,ITUNS,ITUNS1,ITUNS2,
+     5                 DTREDS,DTREDM,DTOUT,ITUNS,ITUNS1,ITUNS2,
      6                 TOLUNS,TOLSWI,ERNLMX,ITMXCG,TOLCG,
-     7                 KSLOPE,LUMP,IPEAT,IVGHU,NLKP,VTKF,
+     7                 KSLOPE,LUMP,IPEAT,IVGHU,NLKP,
      8                 IOPT,ISOLV,IPRT1,IPRT,IPOND,INDP,NNOD,NTRI,NSTR,
-     9                 NZONE,NVEG,N1,NR,NUMVP,NUM_QOUT,NPRT,N,NT,
+     9                 NZONE,N1,NR,NUMVP,NUM_QOUT,NPRT,N,NT,
      A                 ISFONE,ISFCVG,DUPUIT,
      B                 L2NORM,NLRELX,OMEGA,
      C                 PONDH_MIN,
@@ -25,8 +25,12 @@ C
      F                 DEM_MAP,ZONE,LAKES_MAP,INDEX,INDEX_WITH_LAKES,
      G                 CELL,CELLCOL,CELLROW,TP2D,NODI,
      H                 TIPO_R,RESERVR,N_HA,CELLCOL_WL,CELLROW_WL,
-     I                 BASE_MAP,DEPTH,ELTRIA,NCOUT,TRAFLAG,TRANSP,
-     K                 VELREC,VEG_TYPE)
+     I                 BASE_MAP,DEPTH,ELTRIA,
+     J                 DAFLAG,ERT_FLAG,NENS,NOBS,DSRETC,
+     K                 DSATM,DSKS,DSSTOR,DSPOROS,DSSURF,DSIC,DSMEAS,
+     L                 ENKFT,ENKFTIM,ENKFNOD,ENKFVAL,ENKF,NENSMIN,
+     M                 NEFFMIN,DSMEASMAX,DSKSZ,PLANT_FLAG,NMETEODATA,
+     N                 PLANT_PRINT,GROWTH_FLAG,SALT_FLAG,ABL_FLAG)
 C
       IMPLICIT  NONE
       INCLUDE  'CATHY.H'
@@ -35,50 +39,56 @@ C
       INTEGER   ISIMGR,IVERT,ISP
       INTEGER   ITUNS,ITUNS1,ITUNS2,ITMXCG,KSLOPE,LUMP,IPEAT
       INTEGER   IVGHU,IOPT,ISOLV,IPRT1,IPRT,IPOND,INDP,NZONE
-      INTEGER   NNOD,NTRI,NSTR,NVEG
-      INTEGER   NLKP,VTKF,VELREC
+      INTEGER   NNOD,NTRI,NSTR
+      INTEGER   NLKP
       INTEGER   N1,NR,NUMVP,NPRT,N,NT,ISFONE,ISFCVG,DUPUIT
       INTEGER   NUM_QOUT,L2NORM,NLRELX
       INTEGER   NROW,NCOL,NCELNL,NCELL,NUM_TOT_R
-      INTEGER   DOSTEP,NCELL_COARSE,NCOUT,TRAFLAG
+      INTEGER   DOSTEP,NCELL_COARSE
+      INTEGER   DAFLAG,ERT_FLAG,NENS,NOBS,ENKFT,NENSMIN,NEFFMIN
       INTEGER   TRIANG(4,*)
       INTEGER   CONTR(*),NODVP(*),ID_QOUT(*)
       INTEGER   CELLCOL(*),CELLROW(*),TP2D(*)
       INTEGER   CELLCOL_WL(*),CELLROW_WL(*)
-      INTEGER   LAKES_MAP(ROWMAX,*)
-      INTEGER   ZONE(ROWMAX,*)
-      INTEGER   INDEX(ROWMAX,*),INDEX_WITH_LAKES(ROWMAX,*)
-      INTEGER   NODI(ROWMAX+1,*),CELL(5,*)
+      INTEGER   LAKES_MAP(ROWMAX,COLMAX)
+      INTEGER   ZONE(ROWMAX,COLMAX)
+      INTEGER   INDEX(ROWMAX,COLMAX),INDEX_WITH_LAKES(ROWMAX,COLMAX)
+      INTEGER   NODI(ROWMAX+1,COLMAX+1),CELL(5,*)
       INTEGER   RESERVR(*)
-      INTEGER   TIPO_R(*)
+      INTEGER   TIPO_R(MAXCEL)
       INTEGER   N_HA(*)
-      INTEGER   VEG_TYPE(NODMAX)
-      LOGICAL   GRID,DEM,FL3D,SURF,TRANSP
+      INTEGER   ENKFNOD(MAXNUDN,2)
+      LOGICAL   GRID,DEM,FL3D,SURF,ENKF,PLANT_FLAG
+      LOGICAL   GROWTH_FLAG,SALT_FLAG,ABL_FLAG
       REAL*8    SUMZ
       REAL*8    WTPOSITION,BASE,TETAF,DELTAT,DTMIN,DTMAX,TMAX
-      REAL*8    DTMAGA,DTMAGM,DTREDS,DTREDM
+      REAL*8    DTMAGA,DTMAGM,DTREDS,DTREDM,DTOUT
       REAL*8    TOLUNS,TOLSWI,ERNLMX,TOLCG
       REAL*8    OMEGA
-      REAL*8    PONDH_MIN
-      REAL*8    ZRATIO(*),X(*),Y(*),Z(*),DEPTH(*)
-      REAL*8    ELTRIA(NTRMAX)
+      REAL*8    PONDH_MIN,DSMEASMAX,DSKSZ
+      REAL*8    DSRETC,DSKS,DSSTOR,DSPOROS,DSSURF,DSIC,DSATM
+      REAL*8    ZRATIO(*),X(*),Y(*),Z(*),DEPTH(NODMAX)
+      REAL*8    ELTRIA(NTRMAX),DSMEAS(MAXNUDT) 
       REAL*8    PERMX(MAXSTR,*),PERMY(MAXSTR,*),PERMZ(MAXSTR,*)
       REAL*8    ELSTOR(MAXSTR,*),POROS(MAXSTR,*)
-      REAL*8    VGNCELL(MAXSTR,*),VGRMCCELL(MAXSTR,*)
-      REAL*8    VGPSATCELL(MAXSTR,*)
       REAL*8    TIMPRT(*),PONDNOD(*),PTIMEP(*)
-      REAL*8    DEM_MAP(ROWMAX,*),BASE_MAP(ROWMAX,*)
-      REAL*8    VEG_MAP(ROWMAX,COLMAX),SCR(NODMAX)
+      REAL*8    DEM_MAP(ROWMAX,COLMAX),BASE_MAP(ROWMAX,COLMAX)
+      REAL*8    ENKFTIM(MAXNUDT),ENKFVAL(MAXNUDT,MAXNUDN)
 
+      INTEGER   NMETEODATA,PLANT_PRINT    
       INCLUDE  'IOUNITS.H'
       INCLUDE  'SOILCHAR.H'
       INCLUDE  'SURFWATER.H'
       INCLUDE  'RIVERNETWORK.H'
+      INCLUDE  'RANDOM.H'
+      INCLUDE  'PLANT.H'
+
+
 C
 C  unit IIN1 input 
 C
-      READ(IIN1,*) IPRT1,NCOUT,TRAFLAG
-      READ(IIN1,*) ISIMGR,PONDH_MIN,VELREC
+      READ(IIN1,*) IPRT1,DAFLAG
+      READ(IIN1,*) ISIMGR,PONDH_MIN
       IF (ISIMGR .EQ. 0) THEN
          FL3D=.TRUE.
          SURF=.FALSE.
@@ -115,13 +125,13 @@ C
       READ(IIN1,*) ISOLV,ITMXCG,TOLCG
       READ(IIN1,*) DELTAT,DTMIN,DTMAX,TMAX
       READ(IIN1,*) DTMAGA,DTMAGM,DTREDS,DTREDM
-      READ(IIN1,*) IPRT,VTKF,NPRT,(TIMPRT(I),I=1,NPRT)
+      READ(IIN1,*) IPRT,NPRT,(TIMPRT(I),I=1,NPRT)
       READ(IIN1,*) NUMVP,(NODVP(I),I=1,NUMVP)
       READ(IIN1,*) NR
       IF (NR .NE. 0) READ(IIN1,*) (CONTR(I),I=1,NR)
       READ(IIN1,*) NUM_QOUT,(ID_QOUT(I),I=1,NUM_QOUT)
       if (isimgr.le.1) pondh_min=1.0d+10
-      WRITE(IOUT2,1000) ISIMGR,PONDH_MIN
+      WRITE(IOUT2,1000) ISIMGR,PONDH_MIN,DAFLAG
       WRITE(IOUT2,1010) IPRT1,IPRT,NPRT,NUMVP,NR
       WRITE(IOUT2,1015) KSLOPE,TOLKSL
       IF (KSLOPE .EQ. 3  .OR.  KSLOPE .EQ. 4) WRITE(IOUT2,1040)
@@ -142,9 +152,9 @@ C                   build up the surface mesh starting from the DEM
 C                   of the basin.
 C  
       IF (GRID) THEN 
-         READ(IIN2,*) NZONE,NVEG,NSTR,N1
+         READ(IIN2,*) NZONE,NSTR,N1
          READ(IIN2,*) NNOD,NTRI
-         WRITE(IOUT2,1020) NNOD,NTRI,NZONE,NVEG,NSTR,N1
+         WRITE(IOUT2,1020) NNOD,NTRI,NZONE,NSTR,N1
          READ(IIN2,*) IVERT,ISP,BASE
          WRITE(IOUT2,1350) IVERT,ISP,BASE
          READ(IIN2,*) (ZRATIO(I),I=1,NSTR)
@@ -163,26 +173,16 @@ C
             READ(IIN2,*) (Z(I),I=1,NNOD)
          ELSE
             READ(IIN2,*) Z(1)
+            WRITE(IOUT2,*) 'ok'
             DO I=2,NNOD
                Z(I)=Z(1)
+               WRITE(IOUT2,*) 'ok', I
             END DO
          END IF
          IF (IPRT1 .GE .1) WRITE(IOUT2,1360) (I,Z(I),I=1,NNOD)
          READ(IIN2,*) ((TRIANG(I,K),I=1,4),K=1,NTRI)
          READ(IIN2,*) (X(K),Y(K),K=1,NNOD)
-         IF (ISP .GE. 2) THEN
-            READ(IIN2,*) (VEG_TYPE(I),I=1,NNOD)
-         ELSE
-            READ(IIN2,*) VEG_TYPE(1)
-            DO I=2,NNOD
-               VEG_TYPE(I)=VEG_TYPE(1)
-            END DO
-         END IF
-         IF (NVEG.GT.MAXVEG) THEN
-            WRITE(IOUT2,*) 'Error: NVEG is too large=',NVEG
-            CALL CLOSIO
-            STOP
-         END IF
+        
          
       ELSE IF (DEM) THEN
         
@@ -203,8 +203,8 @@ C
             READ(IIN11,*) NZONE,NSTR,N1 
             READ(IIN11,*) IVERT,ISP,BASE
             IF (IVERT.EQ.3) THEN
-               CALL RAST_INPUT_DEM(IIN60,NROW,NCOL,NORTH,SOUTH,EAST,
-     1              WEST,BASE_MAP)
+               CALL RAST_INPUT_DEM(IIN60,NROW,NCOL,NORTH,SOUTH,EAST,WEST
+     1              ,BASE_MAP)
                CALL TRIANGOLI(NROW,NCOL,DELTA_X,DELTA_Y,WEST,SOUTH,
      1              BASE_MAP,ZONE,FACTOR,NNOD,NTRI,DOSTEP,
      2              NCELL_COARSE,NODI,TRIANG,TP2D,X,Y,DEPTH,ELTRIA,
@@ -218,25 +218,6 @@ c
          CALL RAST_INPUT_LZ(IIN20,NROW,NCOL,NORTH,SOUTH,EAST,
      1        WEST,LAKES_MAP)
 c
-c  reading of vegetation type (real raster map, then converted to int)
-c
-         CALL RAST_INPUT_DEM(IIN3,NROW,NCOL,NORTH,SOUTH,EAST,
-     1                       WEST,VEG_MAP)
-         CALL TRIANGOLI(NROW,NCOL,DELTA_X,DELTA_Y,WEST,SOUTH,
-     1                  VEG_MAP,ZONE,FACTOR,NNOD,NTRI,DOSTEP,
-     2                  NCELL_COARSE,NODI,TRIANG,TP2D,X,Y,SCR,
-     3                  ELTRIA,CELL)
-         NVEG=0
-         DO I=1,NNOD
-            VEG_TYPE(I)=INT(SCR(I))
-            NVEG=MAX(NVEG,VEG_TYPE(I))
-         END DO
-         IF (NVEG.GT.MAXVEG) THEN
-            WRITE(IOUT2,*) 'Error: NVEG is too large=',NVEG
-            CALL CLOSIO
-            STOP
-         END IF
-c
 c  cells numbering with and without lakes
 c
         CALL INDEX_DEM(ROWMAX,MAXCEL,NROW,NCOL,NCELNL,NCELL,
@@ -246,7 +227,7 @@ c
         WRITE(IOUT40,*) 'NCELNL=',NCELNL
         WRITE(IOUT40,*) 'NCELL=',NCELL
 c
-c  from cells to triangles: construction of triangles, numbering of 
+c  from cells to triangles: construction of traingles, numbering of 
 c  nodes ed elements, assignment of x y z coordinates, assignment of elevation
 c  values to triangles
 c
@@ -261,7 +242,7 @@ c
 c
 c     reading of grid parameters
 c
-            WRITE(IOUT40,1020) NNOD,NTRI,NZONE,NVEG,NSTR,N1
+            WRITE(IOUT40,1020) NNOD,NTRI,NZONE,NSTR,N1
             WRITE(IOUT40,1350) IVERT,ISP,BASE
             READ(IIN11,*) (ZRATIO(I),I=1,NSTR)
             SUMZ=0.0D0
@@ -390,7 +371,7 @@ C
             END DO
          ELSE IF (INDP .EQ. 1) THEN
             READ(IIN5,*) (PTIMEP(K),K=1,N)
-         END IF
+         END IF 
          IF (IPOND .EQ. 1) THEN
             READ(IIN5,*) PONDNOD(1)
             WRITE(IOUT2,1071) PONDNOD(1)   
@@ -407,7 +388,7 @@ C
             IF (INDP .EQ. 0 .AND. IPRT1 .GE. 1) THEN
                WRITE(IOUT2,1072) (K,PONDNOD(K),K=1,NNOD)
             END IF
-         END IF
+         END IF           
          IF (INDP .EQ. 1 .AND. IPRT1 .GE. 1) THEN
             IF (IPOND.EQ.0) THEN
                WRITE(IOUT2,1090) (K,PTIMEP(K),K=1,N)
@@ -419,17 +400,19 @@ C
 C     unit IIN4 input
 C
          READ(IIN4,*) PMIN
-         READ(IIN4,*) IPEAT,SCF
+         READ(IIN4,*) IPEAT
          READ(IIN4,*) CBETA0,CANG
-C    variable vegetation type (NVEG) within the domain
-         DO I=1,NVEG
-            READ(IIN4,*) PCANA(I),PCREF(I),PCWLT(I),ZROOT(I),
-     1                   PZ(I),OMGC(I)
-         END DO
 c     peat soil deformation is not yet supported for the Newton
 c     scheme
          IF (IOPT .NE. 1  .AND.  IPEAT .EQ. 1) THEN
             WRITE(IOUT2,1910)
+            CALL CLOSIO
+            STOP
+         END IF
+c     peat soil deformation is not yet supported for the EnKF and
+c     SIR DA schemes
+         IF (DAFLAG .GT. 0  .AND.  IPEAT .EQ. 1) THEN
+            WRITE(IOUT2,1920)
             CALL CLOSIO
             STOP
          END IF
@@ -450,8 +433,16 @@ c     given in lookup table form)
             CALL CLOSIO
             STOP
          END IF
+c     moisture curve lookup table option is not yet supported for
+c     the EnKF and SIR DA schemes
+         IF (DAFLAG .GT. 0  .AND.  IVGHU .EQ. -1) THEN
+            WRITE(IOUT2,1950)
+            CALL CLOSIO
+            STOP
+         END IF
 c     for IVGHU = -1 the following "VG"/"HU"/"BC" parameters are not
 c     needed but are read in anyway. Arbitrary values can be assigned.
+         READ(IIN4,*) VGN,VGRMC,VGPSAT
          READ(IIN4,*) HUALFA,HUBETA,HUGAMA,HUPSIA,HUSWR
          READ(IIN4,*) HUN
          READ(IIN4,*) HUA,HUB
@@ -493,8 +484,7 @@ C
          END IF
          WRITE(IOUT2,1220) IVGHU
          IF (IVGHU .EQ. 0 .OR. IVGHU .EQ. 1) THEN
-CM          WRITE(IOUT2,1230) VGN,VGRMC,VGPSAT
-            WRITE(IOUT2,*) 'SPATIALLY VARIABLE VAN GENUCHTEN PARAMETERS'
+            WRITE(IOUT2,1230) VGN,VGRMC,VGPSAT
          ELSE IF (IVGHU .EQ. 2 .OR. IVGHU .EQ. 3) THEN
             WRITE(IOUT2,1240) HUALFA,HUBETA,HUGAMA,HUPSIA,HUSWR
             IF (IVGHU .EQ. 2) THEN
@@ -505,33 +495,286 @@ CM          WRITE(IOUT2,1230) VGN,VGRMC,VGPSAT
          ELSE IF (IVGHU .EQ. 4) THEN
             WRITE(IOUT2,1235) BCBETA,BCRMC,BCPSAT
          END IF
-C
+c
          WRITE(IOUT2,1100)
          DO I=1,NSTR
             DO J=1,NZONE
               READ(IIN4,*) PERMX(I,J),PERMY(I,J),PERMZ(I,J),ELSTOR(I,J),
-     1              POROS(I,J),VGNCELL(I,J),VGRMCCELL(I,J),
-     2              VGPSATCELL(I,J)
-
+     1              POROS(I,J)
             IF(IPRT1.GE.2) WRITE(IOUT2,1110) I,J,PERMX(I,J), PERMY(I,J),
-     1              PERMZ(I,J),ELSTOR(I,J),POROS(I,J),VGNCELL(I,J),
-     2              VGRMCCELL(I,J),VGPSATCELL(I,J)
-
+     1              PERMZ(I,J),ELSTOR(I,J),POROS(I,J)
             END DO
          END DO
       END IF
+      
+C
+C  unit IIN40 input
+C
+      IF (DAFLAG.NE.0) THEN
+         ENKF=.TRUE.
+         READ(IIN40,*) NENS,NOBS,NENSMIN
+         READ(IIN40,*) DSRETC,DSKS,DSSTOR,DSPOROS,DSSURF,DSIC,DSATM
+         READ(IIN40,*) DSKSZ
+         READ(IIN40,*) NEFFMIN,DSMEASMAX
+         READ(IIN40,*) ERT_FLAG
+         DSRETC=DSRETC/1.0D+2
+         DSKS=DSKS/1.0D+2
+         DSKSZ=DSKSZ/1.0D+2
+         DSSTOR=DSSTOR/1.0D+2
+         DSPOROS=DSPOROS/1.0D+2
+         DSSURF=DSSURF/1.0D+2
+         DSIC=DSIC/1.0D+2
+         DSATM=DSATM/1.0D+2
+         DSMEASMAX=DSMEASMAX/1.0D+2
+         READ(IIN40,*) PSISTAR,QSTAR,ATMTAU,DTOUT
+         READ(IIN40,*) ISEED
+c         write(IOUT56,*) ISEED,'ISEED datin'
+         READ(IIN40,*) ENKFT
+         READ(IIN40,*) (ENKFTIM(I),I=1,ENKFT)
+         IF (NOBS.EQ.0) GO TO 666
+         DO I=1,NOBS
+            READ(IIN40,*) (ENKFNOD(I,J),J=1,2)
+         END DO
+         DO I=1,ENKFT
+            READ(IIN40,*) DSMEAS(I)
+            READ(IIN40,*) (ENKFVAL(I,J),J=1,NOBS)
+            DSMEAS(I)=DSMEAS(I)/1.0d+2
+         END DO
+      ELSE
+         ENKF=.FALSE.
+      END IF
+
+C PLANT ------------------------------------
+c ------------------------------------------
+C SISTEMARE FORMATI PER LA STAMPA SUL risul!
+c ------------------------------------------
+
+      READ(IIN61,*) NPLANT, NPTYPE
+      IF (IPRT1.GE.0) THEN
+         WRITE(IOUT2,*) 'PLANT PARAMETERS'
+         WRITE(IOUT2,'(A8,I6,2X,A8,I6)') 'NPLANT =',NPLANT,
+     1'NPTYPE =',NPTYPE
+      ENDIF
+      IF (NPLANT.eq.0) THEN
+         PLANT_FLAG=.FALSE.
+      ELSE
+c ------------------------------------------ PLANT_FLAG
+         PLANT_FLAG=.TRUE.
+         READ(IIN61,*) ACANOFLAG
+         READ(IIN61,*) PLANT_PRINT
+         READ(IIN61,*) NMETEODATA
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,'(A12,I1)') 'NMETEODATA =',NMETEODATA
+         ENDIF
+         READ(IIN61,*) RHOW
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*) 'RHOW =',RHOW
+         ENDIF
+         READ(IIN61,*) COATM,CCO2STAR,CCO2ATM
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'COATM,CCO2STAR,CCO2ATM=',COATM,CCO2STAR,
+     1      CCO2ATM
+         ENDIF
+         READ(IIN61,*) SSTOMA,ASTOMA
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'SSTOMA,ASTOMA =',SSTOMA,ASTOMA
+         ENDIF
+         READ(IIN61,*) TOLLNR,ITMAXNR,PSILEAF0
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'TOLLNR,ITMAXNR,PSILEAF0=',TOLLNR,ITMAXNR,
+     1      PSILEAF0
+         ENDIF
+         READ(IIN61,*) PSTEP,NPMED
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'PSTEP,NPMED =',PSTEP,NPMED
+         ENDIF
+         READ(IIN61,*)(INODP(I),ITYPEP(I),I=1,NPLANT)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'INODP,ITYPEP =',(INODP(I),ITYPEP(I),
+     1      I=1,NPLANT)
+         ENDIF
+         READ(IIN61,*)(XMAXP(I),I=1,NPTYPE)
+         READ(IIN61,*)(YMAXP(I),I=1,NPTYPE)
+         READ(IIN61,*)(ZMAXP(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'XMAXP,YMAXP,ZMAXP =',(XMAXP(I),YMAXP(I),
+     1      ZMAXP(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(VRUX(I),I=1,NPTYPE)
+         READ(IIN61,*)(VRUY(I),I=1,NPTYPE)
+         READ(IIN61,*)(VRUZ(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'VRUX,VRUY,VRUZ =',(VRUX(I),VRUY(I),
+     1      VRUZ(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(VRUX1(I),I=1,NPTYPE)
+         READ(IIN61,*)(VRUY1(I),I=1,NPTYPE)
+         READ(IIN61,*)(VRUZ1(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'VRUX1,VRUY1,VRUZ1 =',(VRUX1(I),VRUY1(I),
+     1      VRUZ1(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(LAI(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'LAI =',(LAI(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(GXYLEM_MAX(I),I=1,NPTYPE)
+         READ(IIN61,*)(C_GXYLEM(I),I=1,NPTYPE)
+         READ(IIN61,*)(D_GXYLEM(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'GXYLEM_MAX,C_GXYLEM,D_GXYLEM =',
+     1      (GXYLEM_MAX(I),C_GXYLEM(I),D_GXYLEM(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(VCMAX25(I),I=1,NPTYPE)
+         READ(IIN61,*)(KC25(I),I=1,NPTYPE)
+         READ(IIN61,*)(KO25(I),I=1,NPTYPE)
+         READ(IIN61,*)(COMP25(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'VCMAX25,KC25,KO25,COMP25 =',(VCMAX25(I),
+     1      KC25(I),KO25(I),COMP25(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(LA_MAX(I),I=1,NPTYPE)
+         READ(IIN61,*)(LA_BETA(I),I=1,NPTYPE)
+         READ(IIN61,*)(LA_PSILMAX(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'LA_MAX,LA_BETA,LA_PSILMAX =',(LA_MAX(I),
+     1      LA_BETA(I),LA_PSILMAX(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(PSILMAX(I),I=1,NPTYPE)
+         READ(IIN61,*)(LIMIT(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'PSILMAX,LIMIT=',(PSILMAX(I),LIMIT(I),
+     1      I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(HCANO(I),I=1,NPTYPE)
+         READ(IIN61,*)(DATA_LEAF(I),I=1,NPTYPE)
+         READ(IIN61,*)(ACANO(I),I=1,NPTYPE)
+         READ(IIN61,*)(AXYLEM(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'HCANO,DATALEAF,ACANO,AXYLEM =',(HCANO(I),
+     1      DATA_LEAF(I),ACANO(I),AXYLEM(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(GROOT_STAR(I),I=1,NPTYPE)
+         READ(IIN61,*)(GSOIL_STAR(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'GROOT_STAR,GSOIL_STAR =',(GROOT_STAR(I),
+     1      GSOIL_STAR(I),I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*)(SALT_TOX(I),I=1,NPTYPE)
+         IF (IPRT1.GE.0) THEN
+            WRITE(IOUT2,*)'SALT_TOX=',(SALT_TOX(I),
+     1      I=1,NPTYPE)
+         ENDIF
+         READ(IIN61,*) NDATA_RDF
+         DO I=1,NDATA_RDF
+            READ(IIN61,*) ZRDF(I),(RDFVAL(I,J),J=1,NPTYPE)
+         ENDDO
+c      ENDIF
+  
+C     Read Soil Salinity
+
+c  Old plant_salt input file
+c      READ(IIN63,*) NSTRSALT
+c      IF (NSTRSALT.eq.0) THEN
+c         SALT_FLAG=.FALSE.
+c      ELSE
+c         SALT_FLAG=.TRUE.
+c         DO I=1,NSTRSALT
+c            READ(IIN63,*) STRSALT(I)
+c            DO J=1,NNOD
+c               READ(IIN63,*) SALT(I,J)
+c            ENDDO
+c         ENDDO
+c      ENDIF
+
+c  New plant_salt input file
+      READ(IIN63,*) NSALTPLANT
+      IF(NSALTPLANT.EQ.0) THEN
+         SALT_FLAG=.FALSE.
+      ELSE
+         SALT_FLAG=.TRUE.
+         READ(IIN63,*) SALT_C,SALT_S
+         DO I=1,NSALTPLANT
+            READ(IIN63,*) SALINITY(I)
+         ENDDO
+      ENDIF
+
+
+C     Read Plant_Growth parameters  
+
+      READ(IIN64,*) GFLAG
+        IF (GFLAG.EQ.1) THEN
+              GROWTH_FLAG = .TRUE.
+              READ(IIN64,*) LDAY
+              READ(IIN64,*) GROWIN  
+              READ(IIN64,*) NGROWDAY
+              READ(IIN64,*) IDVS 
+              READ(IIN64,*)(ILAI(I),I=1,NPTYPE) 
+              READ(IIN64,*)(WLVI(I),I=1,NPTYPE)    
+              READ(IIN64,*)(WSTI(I),I=1,NPTYPE)  
+              READ(IIN64,*)(WRTI(I),I=1,NPTYPE)  
+              READ(IIN64,*)(WLVDI(I),I=1,NPTYPE)  
+              READ(IIN64,*)(WSOI(I),I=1,NPTYPE)  
+              READ(IIN64,*)(IEAI(I),I=1,NPTYPE)  
+              READ(IIN64,*)(CFLV(I),I=1,NPTYPE)  
+              READ(IIN64,*)(CFST(I),I=1,NPTYPE)  
+              READ(IIN64,*)(CFRT(I),I=1,NPTYPE)  
+              READ(IIN64,*)(CFSO(I),I=1,NPTYPE)  
+              READ(IIN64,*)(Q10(I),I=1,NPTYPE)  
+              READ(IIN64,*)(TREF(I),I=1,NPTYPE)  
+              READ(IIN64,*)(MAINLV(I),I=1,NPTYPE)  
+              READ(IIN64,*)(MAINST(I),I=1,NPTYPE)  
+              READ(IIN64,*)(MAINRT(I),I=1,NPTYPE)  
+              READ(IIN64,*)(MAINSO(I),I=1,NPTYPE)  
+              READ(IIN64,*)(ASRQRT(I),I=1,NPTYPE)  
+              READ(IIN64,*)(ASRQLV(I),I=1,NPTYPE)  
+              READ(IIN64,*)(ASRQST(I),I=1,NPTYPE)  
+              READ(IIN64,*)(ASRQSO(I),I=1,NPTYPE)  
+              READ(IIN64,*)(FRTRL(I),I=1,NPTYPE)  
+              READ(IIN64,*)(CONVL(I),I=1,NPTYPE)  
+              READ(IIN64,*)(FRDR(I),I=1,NPTYPE)  
+              READ(IIN64,*)(LAICR(I),I=1,NPTYPE)  
+              READ(IIN64,*)(RGRL(I),I=1,NPTYPE)  
+              READ(IIN64,*)(SLA(I),I=1,NPTYPE)  
+              READ(IIN64,*)(EAR(I),I=1,NPTYPE)  
+              READ(IIN64,*)(TBASE(I),I=1,NPTYPE)  
+        ELSE
+              GROWTH_FLAG = .FALSE.
+        ENDIF
+C     Read ABL model input data
+        READ(IIN65,*) FLAG_ABL
+        IF(FLAG_ABL.EQ.0) THEN
+          ABL_FLAG = .FALSE.
+        ELSE
+          ABL_FLAG = .TRUE.
+          READ(IIN65,*) ABL_MODEL
+          READ(IIN65,*) ZABL0
+          READ(IIN65,*) BETA
+          READ(IIN65,*) LAPSE
+          READ(IIN65,*) LATHEAT
+          READ(IIN65,*) CP
+          READ(IIN65,*) RHO_A
+          READ(IIN65,*) RHO_V
+          WRITE(7777,*) ABL_MODEL,ZABL0,BETA,LAPSE,LATHEAT,CP,RHO_A,
+     1                  RHO_V
+          IF (ABL_MODEL.GE.1) THEN
+             READ(IIN65,*) ALBEDO
+             READ(IIN65,*) EPS_S
+             READ(IIN65,*) SIGMA
+             READ(IIN65,*) ZM_ABL
+             READ(IIN65,*) ZH
+          WRITE(7777,*) ALBEDO,EPS_S,SIGMA,ZM_ABL,ZH
+          ENDIF  
+          IF(ABL_MODEL.GT.1) READ(IIN65,*)LAPSEW
+        ENDIF
+      ENDIF
+c ------------------------------------------ PLANT_FLAG
+
 
 666   CONTINUE
 C
       WRITE(IOUT2,1300) N,NT
 C
-C SET OF THE TRANSP FLAG, THE READING OF TRANSPORT PARAMETERS WILL 
-C  DONE IN DATIN_TRA
-      IF (TRAFLAG .EQ. 1) THEN
-         TRANSP = .TRUE.
-      ELSE
-         TRANSP = .FALSE.
-      END IF
 
       RETURN
 C
@@ -540,7 +783,8 @@ C
  1000 FORMAT(/,5X,'ISIMGR (0 FLOW3D only w/ grid input, ',
      1       /,5X,'        1 FLOW3D only w/ DEM input, ',
      2       /,5X,'        2 FLOW3D and SURF_ROUTE w/ DEM) = ',I6,
-     3       /,5X,'PONDH_MIN (MIN. PONDING HEAD)           = ',1PE15.5)
+     3       /,5X,'PONDH_MIN (MIN. PONDING HEAD)           = ',1PE15.5,
+     4       /,5X,'DAFLAG                                  = ',I6)
  1004 FORMAT(  5X,'TETAF  (EG: 1 BACKWARD EULER, 0.5 C-N)  = ',1PE15.5,
      1       /,5X,'LUMP   (MASS LUMPING IF NONZERO)        = ',I6,
      2       /,5X,'IOPT   (1 PICARD, 2 NEWTON)             = ',I6)
@@ -566,9 +810,8 @@ C
  1020 FORMAT(/,5X,'NNOD   (# OF NODES IN 2-D MESH)         = ',I6,
      1       /,5X,'NTRI   (# OF TRIANGLES IN 2-D MESH)     = ',I6,
      2       /,5X,'NZONE  (NUMERO ZONE (MATERIAL TYPES))   = ',I6,
-     3       /,5X,'NVEG   (NUMERO ZONE VEG (VEG TYPES))    = ',I6,
-     4       /,5X,'NSTR   (NUMERO STRATI)                  = ',I6,
-     5       /,5X,'N1     (NUM. MAX CONTATTI NODALI)       = ',I6)
+     3       /,5X,'NSTR   (NUMERO STRATI)                  = ',I6,
+     4       /,5X,'N1     (NUM. MAX CONTATTI NODALI)       = ',I6)
  1025 FORMAT(  5X,'ITUNS  (MAX NONLINEAR ITER / TIME STEP) = ',I6,
      1       /,5X,'ITUNS1 (DELTAT INCREASE THRESHOLD)      = ',I6,
      2       /,5X,'ITUNS2 (DELTAT DECREASE THRESHOLD)      = ',I6)
@@ -606,9 +849,8 @@ C
      1   'SATURATED HYDRAULIC CONDUCTIVITY, SPECIFIC STORAGE, AND ',
      2   'POROSITY VALUES',/,
      3   1X,' LAYER MAT.TYPE  X-PERM       Y-PERM       Z-PERM',
-     4      '       STORAGE      POROSITY          VGN        VGRMC',
-     5      '        VGPSAT')
- 1110 FORMAT(1X,I4,I8,2X,8(1PE13.5))
+     4      '       STORAGE      POROSITY')
+ 1110 FORMAT(1X,I4,I8,2X,5(1PE13.5))
 C1120 FORMAT(/,5X,'NDIR (# OF NON-ATM, NON-SF DIR NODES 2D)= ',I6)  
 C1150 FORMAT(/,5X,'NON-ATM, NON-SF DIR NODES IN 2-D MESH')
 C1155 FORMAT(/,5X,'NATM, NSF FIXED DIR NODES IN 3-D MESH')
@@ -660,6 +902,9 @@ C1600 format(I5,I5,I5/I5,I5,I5/I5,I5,I5)
  1910 FORMAT(/,5X,'INVALID IOPT AND IPEAT COMBINATION (peat soil ',
      1            'deformation is not yet ',
      2       /,5X,'supported for the Newton scheme)')
+ 1920 FORMAT(/,5X,'INVALID DAFLAG AND IPEAT COMBINATION (peat soil ',
+     1            'deformation is not yet ',
+     2       /,5X,'supported for EnKF and SIR DA schemes)')
  1930 FORMAT(/,5X,'INVALID KSLOPE AND IPEAT COMBINATION (peat soil ',
      1            'deformation is not yet ',
      2       /,5X,'supported for chord slope and tangent slope ',
@@ -669,6 +914,9 @@ C1600 format(I5,I5,I5/I5,I5,I5/I5,I5,I5)
      2       /,5X,'supported for the extended van Genuchten or ',
      3            'Huyakorn moisture curves ',
      4       /,5X,'(unless they are given in lookup table form))')
+ 1950 FORMAT(/,5X,'INVALID DAFLAG AND IVGHU COMBINATION (moisture ',
+     1            'curve lookup table option ',
+     2       /,5X,'is not yet supported for EnKF and SIR DA schemes)')
  1960 FORMAT(/,5X,'NLKP must be at least 3')
  1970 FORMAT(/,5X,'PCAP values must be in ascending order')
       END

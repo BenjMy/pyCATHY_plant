@@ -8,7 +8,7 @@
 0.1E-05    30    -20.0     TOLLNR,ITMAXNR,PSILEAF0
 3600 24                    PSTEP,NPMED (NPMED (e.g. 24) is # of intervals of PSTEP seconds (e.g. 3600), MUST be NPMED*PSTEP=86400,PSTEP>DTMAX)
 
-25		1
+25		1	    NODOI TIPOI
 
 0.6           1             XMAXP        [L]
 0.6           1             YMAXP        [L]

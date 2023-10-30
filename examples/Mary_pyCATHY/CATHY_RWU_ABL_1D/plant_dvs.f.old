@@ -1,0 +1,76 @@
+      SUBROUTINE PLANT_DVS(TIME,DELTAT,DAVTMP)
+
+C --------------------------------------------------------------------------  
+C     Calculate phenological DeVelopment Stage (DVS)
+C --------------------------------------------------------------------------  
+
+      IMPLICIT NONE 
+
+      INCLUDE 'CATHY.H'
+      INCLUDE 'PLANT.H'
+      INCLUDE 'IOUNITS.H'
+
+      REAL*8 TIME,DELTAT,DAVTMP
+      REAL*8 ERRSH,FSHLV,FSHST,FSHSO
+      REAL*8 PLANT_FSH,PLANT_FLV,PLANT_FST,PLANT_FSO
+
+
+c FUNCTION DVRVT(DAVTMP)  ------------------------------
+c
+c calculate the development rate DVR as a function of 
+c daily average temperature (DAVTMP) for the period 
+c from emergence till flowering (pre-anthesis, DVRVT) 
+c and from flowering till maturity (post-anthesis, DVRRT)
+
+
+          IF(DAVTMP.LT.0) THEN
+                  DVRVT =0.0
+                  DVRRT =0.0
+          ELSE
+                  DVRVT = 0.027/30*DAVTMP
+                  DVRRT = 0.031/30*DAVTMP
+          ENDIF
+c------------------------------------------------------
+
+c phenological development stage (DVS) of the crop 
+c d-1 ---> s-1 (LDAY)
+
+          IF(DVS-1.LT.0) THEN
+                  DVR = DVRVT/LDAY
+          ELSE
+                  DVR = DVRRT/LDAY
+          ENDIF
+
+          DVS = DVS + DVR*DELTAT
+
+C DRY MATTER PARTITIONING
+C --------------------------------------------------------------------------  
+  
+          FSH = PLANT_FSH(DVS)
+          FRT = 1-FSH
+
+          FLV = PLANT_FLV(DVS)
+          FST = PLANT_FST(DVS)
+          FSO = PLANT_FSO(DVS)
+
+c for plot
+          FSHLV = FSH*FLV
+          FSHST = FSH*FST
+          FSHSO = FSH*FSO
+
+c check
+          ERRSH = ABS(FLV+FST+FSO-1)
+c         IF(ERRSH.GT.1e-6) THEN
+c            WRITE(IOUT2,*) 'ERROR in DRY MATTER PARTITIONING'
+c            WRITE(IOUT2,*) 'ERRSH > 1e-6'
+c            STOP
+c         ENDIF         
+
+c PLOT
+         WRITE(1122,*) TIME,DVS,FSH,FRT,FSHLV,FSHST,FSHSO,ERRSH
+
+C **************************************************************************
+
+      RETURN
+ 
+      END 

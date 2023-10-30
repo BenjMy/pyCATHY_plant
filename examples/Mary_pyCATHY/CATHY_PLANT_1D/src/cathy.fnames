@@ -39,7 +39,6 @@
 'input/plant_meteo'                              unit IIN62
 'input/plant_salt'                               unit IIN63
 'input/plant_growth'                             unit IIN64
-'input/abl_model'                                unit IIN65
 'output/debug'                                   unit IOUT1
 'output/risul'                                   unit IOUT2
 'output/xyz'                                     unit IOUT3
@@ -80,8 +79,6 @@
 'output/plant_leaf'                              unit IOUT70
 'output/plant_nr'                                unit IOUT71
 'output/plant_growth'                            unit IOUT72
-'output/ablmodel'                                unit IOUT73
-'output/conv_trig'                               unit IOUT74
 'output/peatdef'                                 unit IOUTPT
 'output/term'                                    unit ITERM
    (if ITERM=6 in block_data.f, output is to terminal and this file is ignored)
